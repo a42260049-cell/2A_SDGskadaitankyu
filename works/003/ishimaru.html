@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>たべきりナビ</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;background:#f5f7f4;color:#26352b}
+  header{background:#5b8c5a;color:white;padding:24px 18px;text-align:center}
+  header h1{margin:0 0 6px;font-size:28px}
+  header p{margin:0;font-size:14px}
+  nav{display:flex;gap:6px;max-width:900px;margin:14px auto 0;padding:0 10px;flex-wrap:wrap}
+  nav button{flex:1;min-width:100px;border:0;border-radius:12px;padding:12px;background:white;color:#416541;font-weight:700;cursor:pointer;box-shadow:0 2px 8px #00000012}
+  nav button.active{background:#416f40;color:white}
+  main{max-width:900px;margin:0 auto;padding:14px 14px 40px}
+  .page{display:none}.page.active{display:block}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .card{background:white;border-radius:16px;padding:18px;box-shadow:0 3px 12px #0000000d}
+  .card h3{margin:0 0 8px}.big{font-size:30px;font-weight:800}
+  .warning{border-left:6px solid #e2a93b}.danger{border-left:6px solid #d66}
+  .food{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .food+ .food{border-top:1px solid #eee;margin-top:10px;padding-top:10px}
+  .tag{padding:5px 9px;border-radius:20px;background:#e8f3e6;font-size:12px}
+  .tag.danger{background:#fde8e8;border:0;color:#a33}.tag.warn{background:#fff2d7}
+  input,select{width:100%;padding:12px;border:1px solid #ccd6cc;border-radius:10px;font-size:15px;background:white}
+  label{display:block;font-size:13px;font-weight:700;margin:10px 0 5px}
+  .btn{border:0;border-radius:10px;padding:11px 16px;background:#5b8c5a;color:white;font-weight:700;cursor:pointer}
+  .btn.secondary{background:#e8eee7;color:#365b36}.btn.danger{background:#c85b5b}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .recipe{padding:14px;border:1px solid #e1e9df;border-radius:12px;margin-top:10px;background:#fbfdfb}
+  .empty{text-align:center;color:#777;padding:25px}
+  .notice{background:#eef7ed;border-radius:14px;padding:14px;margin-bottom:14px}
+  footer{text-align:center;color:#778077;font-size:12px;margin-top:25px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🥕 たべきりナビ</h1>
+  <p>冷蔵庫の食品を管理して、食品ロスを減らそう！</p>
+</header>
+
+<nav>
+  <button class="tab active" data-page="home">🏠 ホーム</button>
+  <button class="tab" data-page="fridge">🥬 冷蔵庫</button>
+  <button class="tab" data-page="recipe">🍳 レシピ</button>
+  <button class="tab" data-page="shopping">🛒 買い物</button>
+</nav>
+
+<main>
+<section id="home" class="page active">
+  <div class="notice"><b>今日のポイント</b><br>期限が近い食品から使うと、食品ロスを減らせます。</div>
+  <div class="grid">
+    <div class="card"><div>冷蔵庫の食品</div><div class="big" id="count">0</div></div>
+    <div class="card warning"><div>期限が近い食品</div><div class="big" id="near">0</div></div>
+    <div class="card danger"><div>期限切れ</div><div class="big" id="expired">0</div></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>⚠️ 先に食べたい食品</h3>
+    <div id="priority"></div>
+  </div>
+</section>
+
+<section id="fridge" class="page">
+  <div class="card">
+    <h2>🥬 冷蔵庫の中身</h2>
+    <div id="foodList"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>＋ 食品を登録</h3>
+    <label>食品名</label><input id="name" placeholder="例：キャベツ">
+    <label>数量</label><input id="qty" type="number" min="1" value="1">
+    <label>賞味期限</label><input id="date" type="date">
+    <div style="margin-top:12px"><button class="btn" onclick="addFood()">登録する</button></div>
+  </div>
+</section>
+
+<section id="recipe" class="page">
+  <div class="card">
+    <h2>🍳 期限が近い食材でレシピ提案</h2>
+    <p>冷蔵庫にある食材を使って、食べきりメニューを考えます。</p>
+    <div id="recipes"></div>
+  </div>
+</section>
+
+<section id="shopping" class="page">
+  <div class="card">
+    <h2>🛒 買い物チェック</h2>
+    <p>買い物前に、家にある食品を確認しましょう。</p>
+    <div id="shoppingList"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>買い物メモ</h3>
+    <input id="memo" placeholder="買うものを入力">
+    <button class="btn" style="margin-top:10px" onclick="addMemo()">メモに追加</button>
+    <div id="memos" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<footer>「必要な分だけ買う・早めに食べる」で食品ロスを減らそう</footer>
+</main>
+
+<script>
+const key="tabekiri_foods_v1";
+let foods=JSON.parse(localStorage.getItem(key)||"null")||[
+  {id:1,name:"牛乳",qty:1,date:addDays(2)},
+  {id:2,name:"キャベツ",qty:1,date:addDays(4)},
+  {id:3,name:"卵",qty:6,date:addDays(10)},
+  {id:4,name:"にんじん",qty:2,date:addDays(-1)}
+];
+let memos=JSON.parse(localStorage.getItem("tabekiri_memos")||"[]");
+
+function addDays(n){let d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function save(){localStorage.setItem(key,JSON.stringify(foods))}
+function daysLeft(date){let a=new Date();a.setHours(0,0,0,0);let b=new Date(date);b.setHours(0,0,0,0);return Math.ceil((b-a)/86400000)}
+function status(f){let d=daysLeft(f.date);return d<0?"expired":d<=3?"near":"ok"}
+function statusText(f){let d=daysLeft(f.date);if(d<0)return `期限切れ ${Math.abs(d)}日`;if(d===0)return "今日まで";return `あと${d}日`}
+function render(){
+ document.getElementById("count").textContent=foods.length;
+ document.getElementById("near").textContent=foods.filter(f=>status(f)==="near").length;
+ document.getElementById("expired").textContent=foods.filter(f=>status(f)==="expired").length;
+ let priority=foods.filter(f=>status(f)!=="ok").sort((a,b)=>daysLeft(a.date)-daysLeft(b.date));
+ document.getElementById("priority").innerHTML=priority.length?priority.map(foodHTML).join(""):'<div class="empty">急いで食べる食品はありません 👍</div>';
+ document.getElementById("foodList").innerHTML=foods.length?foods.sort((a,b)=>daysLeft(a.date)-daysLeft(b.date)).map(foodHTML).join(""):'<div class="empty">食品を登録してください</div>';
+ renderRecipes();renderShopping();
+}
+function foodHTML(f){
+ let s=status(f), cls=s==="expired"?"danger":s==="near"?"warn":"";
+ return `<div class="food"><div><b>${esc(f.name)}</b> × ${f.qty}<br><small>期限：${f.date}</small></div>
+ <div class="row"><span class="tag ${cls}">${statusText(f)}</span><button class="btn danger" onclick="removeFood(${f.id})">削除</button></div></div>`;
+}
+function addFood(){
+ let name=document.getElementById("name").value.trim(),qty=Number(document.getElementById("qty").value),date=document.getElementById("date").value;
+ if(!name||!date){alert("食品名と賞味期限を入力してください");return}
+ foods.push({id:Date.now(),name,qty:qty||1,date});save();
+ document.getElementById("name").value="";document.getElementById("qty").value=1;document.getElementById("date").value="";
+ render();show("fridge");
+}
+function removeFood(id){foods=foods.filter(f=>f.id!==id);save();render()}
+function renderRecipes(){
+ let near=foods.filter(f=>status(f)!=="ok");
+ let map={
+ "キャベツ":["キャベツと卵の炒め物","材料：キャベツ1/4個、卵2個、油小さじ1、塩・こしょう少々。 作り方：①キャベツを3〜4cm幅に切る。②卵を溶く。③フライパンに油を入れ、キャベツを中火で2〜3分炒める。④卵を加えて炒める。⑤塩・こしょうで味を整えて完成。"],
+ "牛乳":["ミルクスープ","材料：牛乳300ml、水200ml、野菜150g、コンソメ小さじ2。 作り方：①野菜を切る。②水で野菜を5分ほど煮る。③牛乳とコンソメを加える。④沸騰させないよう弱火で3〜4分温める。⑤味を整えて完成。"],
+ "卵":["卵焼き","材料：卵2個、砂糖小さじ1、だし汁大さじ1。 作り方：①卵と調味料を混ぜる。②フライパンを温め油をひく。③卵液を少量入れて巻く。④残りも少しずつ入れて巻く。⑤食べやすく切って完成。"],
+ "にんじん":["にんじんしりしり","材料：にんじん1本、卵1個、油小さじ1、しょうゆ小さじ1。 作り方：①にんじんを細切りにする。②油をひいたフライパンで3〜4分炒める。③しょうゆを加える。④溶き卵を加えて炒める。⑤卵に火が通ったら完成。"],
+ "じゃがいも":["じゃがいもの煮物","材料：じゃがいも2個、水200ml、しょうゆ大さじ1、砂糖小さじ2。 作り方：①じゃがいもの皮をむき一口大に切る。②鍋に水とじゃがいもを入れる。③砂糖としょうゆを加える。④落としぶたをして10〜15分煮る。⑤柔らかくなったら完成。"],
+ "トマト":["トマトスープ","材料：トマト1個、水300ml、コンソメ小さじ1〜2。 作り方：①トマトを一口大に切る。②鍋に水とトマトを入れる。③沸騰したらコンソメを加える。④5分ほど煮て味を整えたら完成。"]
+ };
+ document.getElementById("recipes").innerHTML=near.length?near.map(f=>{
+   let rs=map[f.name]||[
+     [`${f.name}を使った野菜炒め`,`材料：${f.name}、好きな野菜、油、塩・こしょう。 作り方：①食材を食べやすい大きさに切る。②フライパンに油を入れて中火で熱する。③火の通りにくい食材から炒める。④全体に火が通ったら塩・こしょうで味付けして完成。`],
+     [`${f.name}入りスープ`,`材料：${f.name}、好きな野菜、水、コンソメ。 作り方：①食材を切る。②鍋に水と具材を入れて中火で煮る。③沸騰したらコンソメを加える。④具材が柔らかくなるまで煮て完成。`]
+   ];
+   return `<div class="recipe"><b>⏰ ${esc(f.name)}を先に使おう</b>
+     ${rs.map(r=>`<div style="margin-top:12px"><b>🍳 ${esc(r[0])}</b><br><span style="font-size:13px;line-height:1.7">作り方：${esc(r[1])}</span></div>`).join("")}
+   </div>`;
+ }).join(""):'<div class="empty">期限が近い食品を登録すると、ここに提案が出ます。</div>';
+}
+function renderShopping(){
+ let existing=foods.map(f=>`${esc(f.name)}（${f.qty}）`).join("、");
+ document.getElementById("shoppingList").innerHTML=existing?`<div class="notice">家にある食品：<b>${existing}</b><br><small>買う前に確認して、買いすぎを防ぎましょう。</small></div>`:'<div class="empty">冷蔵庫は空です。</div>';
+ document.getElementById("memos").innerHTML=memos.length?memos.map((m,i)=>`<div class="food"><span>📝 ${esc(m)}</span><button class="btn danger" onclick="removeMemo(${i})">削除</button></div>`).join(""):'';
+}
+function addMemo(){let x=document.getElementById("memo").value.trim();if(!x)return;memos.push(x);localStorage.setItem("tabekiri_memos",JSON.stringify(memos));document.getElementById("memo").value="";renderShopping()}
+function removeMemo(i){memos.splice(i,1);localStorage.setItem("tabekiri_memos",JSON.stringify(memos));renderShopping()}
+function show(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.page===id))}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>show(b.dataset.page));
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+render();
+</script>
+</body>
+</html>

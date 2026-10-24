@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gap Vision</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<main class="container">
+<header class="hero">
+  <p>KKNC（経済格差報道部）｜SDGs探究</p>
+  <h1>Gap Vision</h1>
+  <p><strong>男女の経済格差と未来の収入を見える化</strong></p>
+  <p class="subtitle">収入・ボーナス・職業・地域を入力して、自分の収入の位置を確認できます。</p>
+</header>
+
+<section class="card">
+<h2>① 職業・地域別 収入比較</h2>
+<div class="grid">
+<label>性別
+<select id="gender"><option value="male">男性</option><option value="female">女性</option></select>
+</label>
+
+<label>年齢（歳）
+<input id="age" type="number" min="15" max="100" step="1" value="17">
+</label>
+
+<label>都道府県
+<select id="region">
+<option value="hokkaido">北海道</option><option value="aomori">青森県</option><option value="iwate">岩手県</option><option value="miyagi">宮城県</option><option value="akita">秋田県</option><option value="yamagata">山形県</option><option value="fukushima">福島県</option>
+<option value="ibaraki">茨城県</option><option value="tochigi">栃木県</option><option value="gunma">群馬県</option><option value="saitama">埼玉県</option><option value="chiba">千葉県</option><option value="tokyo">東京都</option><option value="kanagawa">神奈川県</option>
+<option value="niigata">新潟県</option><option value="toyama">富山県</option><option value="ishikawa">石川県</option><option value="fukui">福井県</option><option value="yamanashi">山梨県</option><option value="nagano">長野県</option><option value="gifu">岐阜県</option><option value="shizuoka">静岡県</option><option value="aichi">愛知県</option><option value="mie">三重県</option>
+<option value="shiga">滋賀県</option><option value="kyoto">京都府</option><option value="osaka">大阪府</option><option value="hyogo" selected>兵庫県</option><option value="nara">奈良県</option><option value="wakayama">和歌山県</option>
+<option value="tottori">鳥取県</option><option value="shimane">島根県</option><option value="okayama">岡山県</option><option value="hiroshima">広島県</option><option value="yamaguchi">山口県</option>
+<option value="tokushima">徳島県</option><option value="kagawa">香川県</option><option value="ehime">愛媛県</option><option value="kochi">高知県</option>
+<option value="fukuoka">福岡県</option><option value="saga">佐賀県</option><option value="nagasaki">長崎県</option><option value="kumamoto">熊本県</option><option value="oita">大分県</option><option value="miyazaki">宮崎県</option><option value="kagoshima">鹿児島県</option><option value="okinawa">沖縄県</option>
+</select>
+</label>
+
+<label>職業
+<select id="job">
+<optgroup label="事務・管理">
+<option value="office">一般事務</option><option value="accounting">経理</option><option value="hr">人事</option><option value="manager">管理職</option><option value="secretary">秘書</option>
+</optgroup>
+<optgroup label="IT・技術">
+<option value="it_engineer">ITエンジニア</option><option value="system_engineer">システムエンジニア</option><option value="programmer">プログラマー</option><option value="web_designer">Webデザイナー</option><option value="data_scientist">データサイエンティスト</option><option value="researcher">研究者</option><option value="architect">建築士</option>
+</optgroup>
+<optgroup label="医療・福祉">
+<option value="doctor">医師</option><option value="dentist">歯科医師</option><option value="pharmacist">薬剤師</option><option value="nurse">看護師</option><option value="radiologist">診療放射線技師</option><option value="clinical_technologist">臨床検査技師</option><option value="physical_therapist">理学療法士</option><option value="care_worker">介護職</option><option value="social_worker">社会福祉士</option><option value="nursery_teacher">保育士</option>
+</optgroup>
+<optgroup label="教育・公務">
+<option value="teacher">学校教員</option><option value="private_high_teacher">私立高校教員</option><option value="private_junior_teacher">私立中学校教員</option><option value="private_elementary_teacher">私立小学校教員</option><option value="private_university_teacher">私立大学教員</option><option value="private_school_staff">私立学校事務職員</option><option value="university_teacher">大学教員</option><option value="public">国家・地方公務員</option><option value="police">警察官</option><option value="firefighter">消防士</option><option value="librarian">司書</option><option value="court_judge">裁判官</option><option value="prosecutor">検察官</option><option value="diplomat">外交官</option><option value="jsdf">自衛官</option><option value="jsdf_ground">陸上自衛官</option><option value="jsdf_maritime">海上自衛官</option><option value="jsdf_air">航空自衛官</option>
+</optgroup>
+<optgroup label="営業・金融・法律">
+<option value="sales">営業職</option><option value="banker">銀行員</option><option value="insurance">保険営業</option><option value="financial">金融専門職</option><option value="lawyer">弁護士</option><option value="accountant_cert">公認会計士</option><option value="tax_accountant">税理士</option>
+</optgroup>
+<optgroup label="サービス・販売">
+<option value="chef">調理師</option><option value="hotel">ホテル従業員</option><option value="sales_clerk">販売員</option><option value="convenience">コンビニ店員</option><option value="beautician">美容師</option><option value="driver">自動車運転手</option><option value="railway">鉄道職員</option>
+</optgroup>
+<optgroup label="製造・建設">
+<option value="factory">製造業</option><option value="electrician">電気工事士</option><option value="construction">建設作業員</option><option value="mechanic">自動車整備士</option><option value="machine">機械技術者</option>
+</optgroup>
+<optgroup label="メディア・クリエイティブ">
+<option value="journalist">記者</option><option value="writer">ライター</option><option value="designer">グラフィックデザイナー</option><option value="photographer">カメラマン</option><option value="video">映像制作</option>
+</optgroup>
+<optgroup label="新しい・デジタル職">
+<option value="ai_engineer">AIエンジニア</option><option value="ai_governance">AIガバナンス担当</option><option value="ai_ethics">AI倫理担当</option><option value="data_annotator">データアノテーター</option><option value="ai_work_architect">AIワークアーキテクト</option><option value="ai_steward">AIスチュワード</option><option value="cybersecurity">サイバーセキュリティ担当</option><option value="ux_ui">UI・UXデザイナー</option><option value="fintech">フィンテックエンジニア</option><option value="renewable">再生可能エネルギーエンジニア</option>
+</optgroup>
+<optgroup label="収入変動が大きい職業">
+<option value="athlete">スポーツ選手</option><option value="esports">プロゲーマー</option><option value="manga_artist">漫画家</option><option value="voice_actor">声優</option><option value="actor">俳優</option><option value="musician">ミュージシャン</option><option value="freelancer">フリーランス</option><option value="artist">芸術家・イラストレーター</option><option value="youtuber">動画クリエイター（YouTuber）</option><option value="streamer">ライブ配信者</option>
+</optgroup>
+</select>
+</label>
+
+<label>自分の月収（万円）
+<input id="income" type="number" min="0" max="500" step="0.1" value="30">
+</label>
+
+<label>年間ボーナス
+<select id="bonusMonths">
+<option value="0">なし</option><option value="0.5">0.5か月分</option><option value="1">1か月分</option><option value="2" selected>2か月分</option><option value="3">3か月分</option><option value="4">4か月分</option><option value="5">5か月分</option><option value="6">6か月分</option>
+</select>
+</label>
+</div>
+
+<p class="note">最初に入力するのは月収と基本情報だけ。年間ボーナスは「なし」を含む選択式です。結果画面で日収・年収・生涯収益や地域データをまとめて表示します。</p>
+<button id="analyzeBtn" type="button">分析する</button>
+
+<div id="incomeResult" class="result"></div>
+<div id="incomeBreakdownResult" class="summary income-summary"></div>
+<div id="regionResult" class="result"></div>
+<p id="incomeAssumptionNote" class="note"></p>
+
+<div class="chart"><canvas id="salaryChart"></canvas></div>
+</section>
+
+<section class="card">
+<div class="head">
+<div>
+<h2>② 将来予測</h2>
+<p>現在の収入をもとに5年後までの推移を確認します。</p>
+</div>
+<label class="switch"><input id="futureSwitch" type="checkbox" checked><span></span></label>
+</div>
+<div class="chart"><canvas id="futureChart"></canvas></div>
+<p class="note">※将来予測は説明用の仮定です。毎年の伸び率を固定しているため、実際の将来所得を保証するものではありません。</p>
+</section>
+
+<section class="card">
+<div class="head">
+<div>
+<h2>③ 生活費分析</h2>
+<p>スイッチを押すと生活費入力欄が表示されます。</p>
+</div>
+<label class="switch"><input id="livingSwitch" type="checkbox"><span></span></label>
+</div>
+<div id="livingPanel" hidden>
+<div class="grid">
+<label>家賃（万円）<input id="rent" type="number" min="0" value="6"></label>
+<label>食費（万円）<input id="food" type="number" min="0" value="4"></label>
+<label>光熱費（万円）<input id="utility" type="number" min="0" value="1.5"></label>
+<label>通信費（万円）<input id="phone" type="number" min="0" value="0.8"></label>
+<label>交通費（万円）<input id="transport" type="number" min="0" value="1"></label>
+<label>その他（万円）<input id="other" type="number" min="0" value="2"></label>
+</div>
+<div class="summary">
+<div>生活費合計<strong id="expenses">15.3万円</strong></div>
+<div>月収から残る金額<strong id="balance">14.7万円</strong></div>
+</div>
+</div>
+</section>
+
+</main>
+<script src="script.js"></script>
+</body>
+</html>

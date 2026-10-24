@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KKNC｜経済格差報道部</title>
+<style>
+:root{
+  --bg:#f3f4f6;--text:#1f2933;--muted:#68727d;--card:#ffffff;
+  --blue:#263746;--blue2:#182631;--pink:#7d8790;--green:#4f6b5d;
+  --line:#dfe3e7;--shadow:0 10px 30px rgba(25,35,45,.07);
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Yu Gothic",sans-serif;color:var(--text);background:var(--bg);line-height:1.7}
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1100px;margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:900;letter-spacing:.04em}.logo span{color:#344a5a}
+nav a{color:var(--text);text-decoration:none;margin-left:20px;font-size:14px;font-weight:700}
+.hero{background:linear-gradient(135deg,#182631,#263746 55%,#344a5a);color:white}
+.hero-inner{max-width:1100px;margin:auto;padding:85px 22px 90px;display:grid;grid-template-columns:1.25fr .75fr;gap:45px;align-items:center}
+.badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:7px 12px;border-radius:999px;font-size:13px}
+h1{font-size:clamp(36px,6vw,64px);line-height:1.12;margin:18px 0;letter-spacing:-.035em}.hero p{font-size:18px;opacity:.93}
+.hero-card{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:24px;padding:26px;box-shadow:var(--shadow)}
+.hero-card .big{font-size:58px;font-weight:900;line-height:1}.mini{opacity:.8;font-size:13px}
+section{max-width:1100px;margin:auto;padding:75px 22px}
+.section-title{font-size:32px;margin:0 0 10px}.lead{color:var(--muted);margin:0 0 30px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.two{grid-template-columns:1fr 1fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.icon{font-size:32px}.tag{display:inline-block;background:#eef0f2;color:var(--blue2);padding:4px 9px;border-radius:8px;font-size:12px;font-weight:800}
+.reason{border-left:4px solid var(--pink);padding-left:18px}
+.target{display:flex;gap:14px;align-items:center}.target-number{min-width:54px;height:54px;border-radius:14px;background:var(--blue);color:white;display:grid;place-items:center;font-weight:900;font-size:20px}
+.chart{margin-top:18px}.bar-row{display:grid;grid-template-columns:90px 1fr 55px;gap:10px;align-items:center;margin:13px 0;font-size:13px}.bar{height:16px;background:#e9eef7;border-radius:99px;overflow:hidden}.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#344a5a,#73808a)}
+.tool{background:#101828;color:white;border-radius:22px;padding:25px}.tool input,.tool select,.tool button,.chat-input input{font:inherit}
+input,select{width:100%;padding:12px;border:1px solid #d8dfeb;border-radius:10px;background:white;color:var(--text)}
+button{border:0;border-radius:10px;padding:12px 16px;background:var(--blue);color:white;font-weight:800;cursor:pointer}
+button:hover{background:#101b24}
+.result{margin-top:15px;padding:15px;border-radius:12px;background:#edf0f2;color:#263746}
+.chat{background:#fff;color:var(--text);border-radius:16px;padding:18px}.messages{height:170px;overflow:auto;background:#f7f9fc;border-radius:12px;padding:12px;margin-bottom:10px}.msg{margin:8px 0;padding:9px 12px;border-radius:12px;max-width:85%}.bot{background:#edf0f2}.me{background:#e8ece9;margin-left:auto}.chat-input{display:flex;gap:8px}.chat-input input{flex:1;padding:11px;border:1px solid #d8dfeb;border-radius:10px}
+.map{height:220px;border-radius:16px;background:radial-gradient(circle at 25% 30%,#9cc3ff 0 3px,transparent 4px),radial-gradient(circle at 70% 65%,#ff8db5 0 4px,transparent 5px),linear-gradient(135deg,#e8f2e9,#d7e7d6);position:relative;overflow:hidden}.map:before,.map:after{content:"";position:absolute;border:2px solid rgba(36,99,235,.25);border-radius:50%;width:260px;height:160px;left:30%;top:20%;transform:rotate(20deg)}.map:after{width:150px;height:90px;left:5%;top:55%;transform:rotate(-25deg)}
+.map-label{position:absolute;background:white;padding:7px 10px;border-radius:9px;box-shadow:0 5px 15px #0001;font-size:12px;font-weight:800;z-index:1}.l1{left:18%;top:25%}.l2{right:12%;bottom:25%}
+footer{background:#111827;color:#cbd5e1;text-align:center;padding:35px 20px}footer strong{color:white}
+@media(max-width:800px){.hero-inner,.grid,.two{grid-template-columns:1fr}nav{display:none}.hero-inner{padding-top:60px}.bar-row{grid-template-columns:70px 1fr 45px}}
+
+.hero-inner{min-height:560px}
+.hero-card{position:relative;overflow:hidden}
+.hero-card:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08);right:-50px;top:-50px}
+.section-title{font-weight:900;letter-spacing:-.02em}
+.card{transition:transform .2s ease,box-shadow .2s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 45px rgba(30,50,90,.13)}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:25px}
+.kpi-box{background:white;border:1px solid var(--line);border-radius:18px;padding:20px;text-align:center;box-shadow:var(--shadow)}
+.kpi-box strong{display:block;font-size:32px;line-height:1.1;color:#344a5a}
+.steps{counter-reset:step}
+.step{position:relative;padding-left:62px}
+.step:before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;width:42px;height:42px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:900}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bar-fill{width:var(--w)}
+.disclaimer{font-size:12px;color:var(--muted);margin-top:12px}
+@media(max-width:800px){.kpi{grid-template-columns:1fr}.filters{grid-template-columns:1fr}}
+</style>
+
+<style>
+.lifetime-card{background:#fff;border:1px solid #dfe3e8;border-radius:22px;padding:28px;box-shadow:0 12px 35px rgba(20,35,55,.07)}
+.lifetime-controls{display:grid;grid-template-columns:1fr 1fr auto;gap:16px;align-items:end}
+.lifetime-controls label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:#4b5563}
+.lifetime-controls select{width:100%;padding:13px 14px;border:1px solid #cfd5dc;border-radius:10px;background:#fff;font-size:15px}
+.lifetime-controls button{border:0;border-radius:10px;padding:14px 22px;background:#172033;color:#fff;font-weight:700;cursor:pointer}
+.lifetime-result{display:flex;gap:28px;align-items:center;margin-top:28px;padding:24px;background:#f5f6f8;border-radius:16px}
+.life-number span{display:block;font-size:13px;color:#687180;margin-bottom:5px}
+.life-number strong{font-size:42px;letter-spacing:-1px}
+.life-number small{font-size:16px;margin-left:5px}
+.life-explain{line-height:1.8;color:#4b5563}
+.life-bar{margin-top:28px}
+.life-bar-label{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:8px}
+.life-bars{display:grid;gap:9px}
+.bar{height:22px;border-radius:5px;min-width:8px;transition:width .6s ease}
+.bar.male{width:100%;background:#172033}
+.bar.female{width:77%;background:#7b8490}
+.note{margin-top:16px;font-size:12px;color:#7a818c}
+@media(max-width:700px){
+ .lifetime-controls{grid-template-columns:1fr}
+ .lifetime-result{display:block}
+ .life-number{margin-bottom:15px}
+}
+</style>
+
+
+<style>
+:root{
+  --ink:#111827;--muted:#667085;--line:#e7e9ee;--paper:#fff;
+  --soft:#f5f6f8;--accent:#182230;
+}
+html{scroll-behavior:smooth}
+body{
+  background:#f7f7f5!important;color:var(--ink)!important;
+  font-family:Inter,"Noto Sans JP",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  letter-spacing:.01em;
+}
+header,.nav,.navbar{
+  backdrop-filter:blur(18px);background:rgba(247,247,245,.86)!important;
+  border-bottom:1px solid rgba(17,24,39,.08)!important;
+}
+.hero{
+  min-height:78vh!important;display:flex;align-items:center;
+  background:radial-gradient(circle at 78% 28%,#e9edf1 0,transparent 34%),#f7f7f5!important;
+  position:relative;overflow:hidden;
+}
+.hero:after{
+  content:"";position:absolute;right:-10vw;bottom:-20vw;width:45vw;height:45vw;
+  border:1px solid #dfe3e8;border-radius:50%;
+}
+.hero h1{font-size:clamp(48px,8vw,104px)!important;line-height:.98!important;letter-spacing:-.055em!important;font-weight:800!important}
+.hero p{max-width:650px!important;color:#596273!important;font-size:18px!important;line-height:1.9!important}
+.section{padding:110px 0!important}
+.section-head{margin-bottom:48px!important}
+.eyebrow{font-size:11px!important;letter-spacing:.2em!important;font-weight:800!important;color:#7a8492!important}
+.section-head h2{font-size:clamp(30px,4vw,54px)!important;letter-spacing:-.035em!important;line-height:1.12!important}
+.section-head p{color:var(--muted)!important}
+.card,.feature-card,.salary-card,.lifetime-card,.result-box{
+  background:rgba(255,255,255,.9)!important;border:1px solid var(--line)!important;
+  border-radius:24px!important;box-shadow:0 18px 55px rgba(17,24,39,.06)!important;
+}
+.card:hover,.feature-card:hover{transform:translateY(-4px);box-shadow:0 24px 65px rgba(17,24,39,.09)!important}
+.kpi,.stat,.metric{border:1px solid var(--line)!important;background:#fff!important;border-radius:20px!important}
+.kpi strong,.stat strong,.metric strong{font-size:38px!important;letter-spacing:-.04em}
+button,.btn{
+  background:#111827!important;color:#fff!important;border:0!important;
+  border-radius:12px!important;padding:14px 20px!important;font-weight:750!important;
+  transition:.2s ease!important;
+}
+button:hover,.btn:hover{transform:translateY(-2px);background:#263142!important}
+select,input{
+  border:1px solid #d9dde4!important;background:#fff!important;border-radius:11px!important;
+  padding:13px 14px!important;color:#111827!important;
+}
+label{color:#596273!important;font-weight:700!important;font-size:13px!important}
+.chart-container,.chart-wrap{background:#fff!important;border:1px solid var(--line)!important;border-radius:22px!important;padding:24px!important}
+.lifetime-result{background:#f1f3f5!important;border:1px solid #e5e7eb!important}
+.life-number strong{font-size:52px!important}
+.note{color:#89919d!important}
+footer{background:#111827!important;color:#fff!important;margin-top:70px}
+footer p,footer span{color:#b8c0cb!important}
+@media(max-width:700px){
+ .hero{min-height:68vh!important}
+ .hero h1{font-size:52px!important}
+ .section{padding:76px 0!important}
+ .section-head h2{font-size:34px!important}
+}
+</style>
+
+
+<style>@media(max-width:700px){#story-strip>div{grid-template-columns:1fr!important}}</style>
+
+<style>
+/* title visibility / color correction */
+.hero{
+  background:#f3f5f7!important;
+}
+.hero h1{
+  color:#111827!important;
+  text-shadow:none!important;
+  max-width:900px!important;
+}
+.hero h1 span,.hero h1 strong,.hero .accent{
+  color:#111827!important;
+}
+.hero p{
+  color:#4b5563!important;
+}
+.hero .eyebrow{
+  color:#596273!important;
+}
+.hero .hero-content,.hero .container{
+  position:relative;z-index:2;
+}
+/* remove overly gray / low contrast treatments */
+h1,h2,h3,h4{color:#111827!important}
+a{color:#111827}
+.eyebrow{color:#687180!important}
+/* clearer SDGs / KPI blocks */
+.kpi strong,.stat strong,.metric strong{color:#111827!important}
+.kpi small,.stat small,.metric small{color:#667085!important}
+/* make primary accent consistent */
+button,.btn{background:#111827!important;color:#fff!important}
+button:hover,.btn:hover{background:#2a3442!important}
+/* clean section backgrounds */
+.section:nth-of-type(even){background:#fff!important}
+.section:nth-of-type(odd){background:#f7f7f5!important}
+/* chart titles */
+.chart-container h3,.chart-wrap h3{color:#111827!important}
+/* mobile */
+@media(max-width:700px){
+ .hero h1{font-size:46px!important;line-height:1.04!important}
+}
+</style>
+
+
+<style>
+/* SDGs 8 / 10 visibility fix */
+.hero-card{
+  background:#ffffff!important;
+  border:1px solid #dfe3e8!important;
+  color:#111827!important;
+  box-shadow:0 18px 50px rgba(17,24,39,.08)!important;
+}
+.hero-card .mini{color:#6b7280!important;opacity:1!important}
+.hero-card .target{color:#111827!important}
+.hero-card .target-number{
+  background:#111827!important;
+  color:#ffffff!important;
+}
+.hero-card .target div:last-child,
+.hero-card .target b{
+  color:#111827!important;
+}
+.hero-card .target + .target{border-top:1px solid #eceef1;padding-top:15px}
+</style>
+
+<style>
+.card p { line-height: 1.9; }
+.solution-card p, .reason p { max-width: 52em; }
+</style>
+
+<style>
+#research-purpose .card p,#app-concept .card p{max-width:58em}
+#app-concept .tag{letter-spacing:.03em}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo"><span>KKNC</span> 経済格差報道部</div><nav><a href="#about">探究テーマ</a><a href="#research-purpose">探究の目的</a><a href="#app">給与比較</a><a href="#solution">個人的な完成形はこれ</a></nav></div></header>
+
+<div class="hero"><div class="hero-inner"><div>
+<span class="badge">R8｜2A 課題探究・SDGs調査</span>
+<h1>男女の給与差を<br>データで見える化。</h1>
+<p>男女の経済格差について、年齢ごとの給与や将来の差をグラフで分かりやすく見る探究サイト。</p>
+<a href="#app" style="display:inline-block;margin-top:14px;padding:12px 18px;border-radius:12px;background:#fff;color:#263746;text-decoration:none;font-weight:900">給与を比較する ↓</a>
+</div><div class="hero-card"><div class="mini">探究するSDGs</div>
+<div class="target" style="margin-top:15px"><div class="target-number">8</div><div><b>働きがいも経済成長も</b></div></div>
+<div class="target" style="margin-top:15px"><div class="target-number">10</div><div><b>人や国の不平等をなくそう</b></div></div>
+</div></div></div>
+<div class="kpi" style="max-width:1056px;margin:-35px auto 0;position:relative;z-index:2;padding:0 22px 10px">
+<div class="kpi-box"><strong>8</strong><span>働きがいも経済成長も</span></div><div class="kpi-box"><strong>10</strong><span>人や国の不平等をなくそう</span></div><div class="kpi-box"><strong>118位</strong><span>資料に記載された日本の順位</span></div></div>
+
+<section id="about"><h2 class="section-title">探究テーマ</h2><p class="lead">男女の経済格差とは？</p><div class="grid two">
+<div class="card"><span class="tag">なぜ調べる？</span><h3>男女の給与には差がある</h3><p>同じように働いていても、性別によって給与に差が生まれることがあります。その差が年齢とともにどう変化するのかを、数字とグラフで分かりやすくします。</p></div>
+<div class="card"><span class="tag">SDGs</span><h3>8番・10番につながる</h3><p>「働きがいも経済成長も」と「人や国の不平等をなくそう」という2つの目標から、男女の経済格差について考えます。</p></div>
+</div></section>
+
+<section id="problem"><h2 class="section-title">この問題のポイント</h2><p class="lead">給与だけでなく、社会の考え方も関係しています。</p><div class="grid">
+<div class="card"><span class="tag">01</span><h3>給与の差</h3><p>同じ職種でも給与に差が生まれることがあります。年齢や働き方によって差がどのように変化するのかを数字で確認し、自分たちの身近な問題として考えることが大切です。</p></div>
+<div class="card"><span class="tag">02</span><h3>年齢による変化</h3><p>20代から60代まで、給与がどう変化するかを見る。</p></div>
+<div class="card"><span class="tag">03</span><h3>社会の認識</h3><p>「男性は仕事、女性は家庭」という考え方が残っていると、仕事の選択や昇進の機会にも影響する可能性があります。こうした固定観念そのものを見直すことが必要です。</p></div>
+</div></section>
+
+
+<section class="section" id="research-purpose">
+  <div class="section-head">
+    <span class="eyebrow">RESEARCH PURPOSE</span>
+    <h2>探究の目的</h2>
+    <p>なぜ「男女の経済格差」をテーマにしたのか。</p>
+  </div>
+  <div class="card" style="padding:32px;">
+    <p style="font-size:18px;line-height:2;">
+      現代社会の問題を考えたときに、<strong>男女の賃金差</strong>について調べたいと思ったことが、この探究のきっかけです。
+      そして、SDGsの<strong>8番「働きがいも経済成長も」</strong>と
+      <strong>10番「人や国の不平等をなくそう」</strong>に当てはまるテーマだと考えました。
+    </p>
+    <p style="font-size:16px;line-height:2;color:#667085;">
+      給与を年齢や性別の視点から比較し、どのくらい差があるのかを数字で知ることで、
+      男女の経済格差を身近な問題として考えることを目的としています。
+    </p>
+  </div>
+</section>
+
+<section class="section" id="app-concept">
+  <div class="section-head">
+    <span class="eyebrow">APP CONCEPT</span>
+    <h2>アプリの考え方</h2>
+    <p>「差を見える化する」ことで、問題を知るきっかけをつくる。</p>
+  </div>
+  <div class="grid two">
+    <div class="card" style="padding:30px;">
+      <span class="tag">01｜比較</span>
+      <h3 style="font-size:25px;margin-top:14px;">自分の給与を比べる</h3>
+      <p>職種・年齢・性別などを選び、自分の給与がどのくらいの水準なのかを確認できるようにします。</p>
+    </div>
+    <div class="card" style="padding:30px;">
+      <span class="tag">02｜見える化</span>
+      <h3 style="font-size:25px;margin-top:14px;">年齢ごとの差をグラフで見る</h3>
+      <p>男女の給与を折れ線グラフで表示し、年齢が上がるにつれて差がどう変化するのかを分かりやすくします。</p>
+    </div>
+    <div class="card" style="padding:30px;">
+      <span class="tag">03｜将来</span>
+      <h3 style="font-size:25px;margin-top:14px;">将来・生涯の差を考える</h3>
+      <p>今後の給与差や、生涯で積み重なる差額をシミュレーションし、「小さな差が積み重なるとどうなるか」を考えられるようにします。</p>
+    </div>
+    <div class="card" style="padding:30px;background:#111827!important;color:#fff!important;">
+      <span style="display:inline-block;padding:5px 9px;border-radius:7px;background:#273142;color:#cbd5e1;font-size:12px;font-weight:800;">04｜目的</span>
+      <h3 style="font-size:25px;margin-top:14px;color:#fff!important;">知ることから解決につなげる</h3>
+      <p style="color:#cbd5e1!important;">数字やグラフを通して男女の経済格差を知り、なぜ差が生まれるのか、どうすれば差を小さくできるのかを考えるきっかけをつくります。</p>
+    </div>
+  </div>
+</section>
+
+<section id="app"><h2 class="section-title">男女の給与を比較</h2><p class="lead">職種・性別・年齢を選んで、給与の推移と将来の差を見てみよう。</p>
+<div class="tool"><div class="filters">
+<div><label>職種</label><select id="job"><option>事務</option><option>販売</option><option>IT・エンジニア</option><option>教育</option><option>医療・看護</option><option>介護・福祉</option><option>建設・土木</option><option>製造・工場</option><option>営業</option><option>金融・保険</option><option>公務員</option><option>飲食・サービス</option><option>運輸・物流</option><option>美容・理容</option><option>デザイン・クリエイティブ</option></select></div>
+<div><label>性別</label><select id="gender"><option value="male">男性</option><option value="female">女性</option></select></div>
+<div><label>年齢</label><select id="age"><option>20</option><option>25</option><option>30</option><option>35</option><option>40</option><option>45</option><option>50</option><option>55</option><option>60</option></select></div>
+<div><label>現在の給与（月額・万円）</label><input id="salary" type="number" min="0" placeholder="例：30"></div>
+</div><button onclick="compareSalary()" style="margin-top:14px;width:100%">グラフを見る</button>
+<div id="salaryResult" class="result" style="display:none"></div></div>
+
+<div id="careerPanel" style="display:none;margin-top:18px"><div class="grid two">
+<div class="card"><h3>男女の給与推移</h3><p class="disclaimer">同じ職種の比較用にした簡易シミュレーションです。</p><div id="genderChart" style="height:260px"></div></div>
+<div class="card"><h3>今後の給与差シミュレーション</h3><p class="disclaimer">現在から30年後まで、同じ伸び率が続くと仮定した参考値です。</p><div id="futureGenderChart" style="height:260px"></div></div>
+</div><div id="gapResult" class="result"></div><p class="disclaimer">※このグラフは探究用の簡易シミュレーションです。将来の給与を保証する予測ではありません。実際の賃金は職種、勤続年数、雇用形態などによって変わります。</p></div>
+</section>
+
+<section id="solution"><h2 class="section-title">個人的な完成形はこれ</h2><p class="lead">自分の給与を比べるだけでなく、男女の給与差を知り、将来まで考えられるアプリにしたい。</p><div class="grid two">
+<div class="card"><span class="tag">アプリの考え方</span><h3>自分の給与と全国平均を比較</h3><p>入力した給与と基準となる数値を比べ、現在の状況を分かりやすく確認できるようにします。</p></div>
+<div class="card"><span class="tag">探究の目的</span><h3>男女の差を「見える化」</h3><p>年齢ごとのグラフを見ることで、男女の給与差について考えるきっかけをつくります。</p></div>
+</div></section>
+
+<footer><strong>KKNC（経済格差報道部）</strong><br>寺口蓮人・三原晴太郎・廣瀬惟吹<br><small>SDGs｜8 働きがいも経済成長も　10 人や国の不平等をなくそう</small></footer>
+<script>
+const averages={事務:330,販売:300,"IT・エンジニア":450,教育:380,"医療・看護":400,"介護・福祉":320,"建設・土木":390,"製造・工場":350,営業:380,"金融・保険":450,公務員:400,"飲食・サービス":300,"運輸・物流":350,"美容・理容":310,"デザイン・クリエイティブ":360};
+function compareSalary(){const job=document.getElementById('job').value,gender=document.getElementById('gender').value,age=Number(document.getElementById('age').value),salary=Number(document.getElementById('salary').value),box=document.getElementById('salaryResult'),panel=document.getElementById('careerPanel');if(!salary){box.style.display='block';box.textContent='現在の給与を入力してください。';panel.style.display='none';return;}const base=averages[job],ratio=gender==='male'?1:0.766,estimated=Math.round(base*ratio),diff=salary-estimated;box.style.display='block';box.innerHTML=`<strong>${gender==='male'?'男性':'女性'}・${age}歳・${job}</strong><br>比較基準（デモ）：${estimated}万円／月<br>${diff>=0?`基準より${diff}万円高い水準です。`:`基準より${Math.abs(diff)}万円低い水準です。`}`;panel.style.display='block';drawGenderCharts(base,age);}
+function drawGenderCharts(base,selectedAge){const ages=[20,25,30,35,40,45,50,55,60],mf=[.72,.82,.92,1.03,1.12,1.19,1.24,1.27,1.18],ff=[.62,.72,.80,.88,.94,.99,1.03,1.05,.98],male=mf.map(x=>Math.round(base*x)),female=ff.map(x=>Math.round(base*x)),idx=Math.max(0,ages.indexOf(selectedAge)),gap=Math.max(0,male[idx]-female[idx]);document.getElementById('genderChart').innerHTML=makeDualSvg(ages,male,female,Math.max(...male)*1.12,'年齢（歳）');document.getElementById('gapResult').innerHTML=`<strong>${selectedAge}歳時点の推定差：${gap}万円／月</strong><br>折れ線が離れるほど、男女の給与差が大きいことを表します。`;const years=[0,5,10,15,20,25,30],futureMale=years.map(y=>Math.round(male[idx]*Math.pow(1.02,y))),futureFemale=years.map(y=>Math.round(female[idx]*Math.pow(1.02,y)));document.getElementById('futureGenderChart').innerHTML=makeDualSvg(years,futureMale,futureFemale,Math.max(...futureMale)*1.12,'今から何年後');}
+function makeDualSvg(xs,a,b,max,xLabel){const W=700,H=235,L=52,R=18,T=15,B=40,x=i=>L+(W-L-R)*(i/(xs.length-1)),y=v=>T+(H-T-B)*(1-v/max),grid=[.25,.5,.75,1].map(r=>{let yy=y(max*r);return `<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#dfe3e7"/><text x="${L-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="#68727d">${Math.round(max*r)}</text>`}).join(''),line=(arr,stroke)=>`<polyline points="${arr.map((v,i)=>`${x(i)},${y(v)}`).join(' ')}" fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,labels=xs.map((v,i)=>`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="10" fill="#68727d">${v}</text>`).join('');return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%">${grid}${line(a,'#344a5a')}${line(b,'#7d8790')}${labels}<line x1="${W-170}" y1="18" x2="${W-150}" y2="18" stroke="#344a5a" stroke-width="3"/><text x="${W-145}" y="22" font-size="11" fill="#344a5a">男性</text><line x1="${W-90}" y1="18" x2="${W-70}" y2="18" stroke="#7d8790" stroke-width="3"/><text x="${W-65}" y="22" font-size="11" fill="#68727d">女性</text><text x="${W/2}" y="${H-1}" text-anchor="middle" font-size="10" fill="#68727d">${xLabel}</text></svg>`;}
+</script>
+<script>
+function calculateLifetimeGap(){
+  const age = Number(document.getElementById('lifeAge').value);
+  const years = Number(document.getElementById('lifeYears').value);
+
+  // 男女の給与比率をベースにした探究用の簡易モデル
+  const maleRatio = 1.00;
+  const femaleRatio = 0.766;
+  const baseMonthly = 340600;
+  const annualMale = baseMonthly * 12 * maleRatio;
+  const annualFemale = baseMonthly * 12 * femaleRatio;
+
+  // 年齢による変化をゆるやかに反映
+  const ageFactor = age <= 25 ? 0.88 : age <= 30 ? 0.94 : age <= 35 ? 1.00 : age <= 40 ? 1.05 : 1.08;
+  const gap = (annualMale - annualFemale) * years * ageFactor / 10000;
+
+  document.getElementById('lifetimeGap').textContent = Math.round(gap).toLocaleString();
+  document.getElementById('lifetimeExplain').textContent =
+    age + '歳から' + years + '年間働くと仮定すると、男女の給与差は累計で約' +
+    Math.round(gap).toLocaleString() + '万円になります。';
+
+  const femaleWidth = femaleRatio * 100;
+  document.getElementById('maleLifeBar').style.width = '100%';
+  document.getElementById('femaleLifeBar').style.width = femaleWidth + '%';
+}
+</script>
+
+</body></html>
