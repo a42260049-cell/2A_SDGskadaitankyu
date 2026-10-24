@@ -1,0 +1,184 @@
+*{box-sizing:border-box}
+body{
+  margin:0;
+  padding:24px;
+  font-family:Arial,"Yu Gothic",sans-serif;
+  background:#eef3f7;
+  color:#1f2937;
+}
+ .container{
+  max-width:1000px;
+  margin:0 auto;
+  background:#ffffff;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 6px 22px rgba(0,0,0,.08);
+}
+.hero{
+  text-align:center;
+  padding:20px;
+  margin-bottom:18px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#dff3ff 0%,#efe6ff 48%,#fff0d6 100%);
+  border:3px solid #ffffff;
+  box-shadow:0 8px 26px rgba(42,91,130,.16);
+}
+.hero h1{margin:6px 0;color:#1267c5;font-size:2.3rem}
+.hero p{margin:6px 0;color:#526579}
+.hero .subtitle{font-size:14px}
+
+.card{
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 8px 22px rgba(38,77,120,.12);
+  border:2px solid rgba(255,255,255,.95);
+}
+.card:nth-of-type(1){
+  background:linear-gradient(135deg,#e5f7ff,#f1f8ff);
+  border-color:#94dfff;
+}
+.card:nth-of-type(2){
+  background:linear-gradient(135deg,#efe9ff,#f8f1ff);
+  border-color:#cbb5ff;
+}
+.card:nth-of-type(3){
+  background:linear-gradient(135deg,#e6fff1,#f2fff8);
+  border-color:#9de5bf;
+}
+.card h2{color:#145fae;margin-top:0}
+.card:nth-of-type(2) h2{color:#6841bd}
+.card:nth-of-type(3) h2{color:#16815d}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+label{
+  font-weight:700;
+  font-size:14px;
+  display:block;
+}
+input,select{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border:2px solid #d7e5ef;
+  border-radius:10px;
+  font-size:16px;
+  background:rgba(255,255,255,.92);
+  color:#18324a;
+}
+input:focus,select:focus{
+  outline:3px solid rgba(21,101,192,.18);
+  border-color:#4d9de0;
+}
+
+button{
+  margin-top:14px;
+  padding:11px 18px;
+  border:0;
+  border-radius:8px;
+  background:#2563eb;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+.result{
+  margin-top:14px;
+  padding:12px;
+  line-height:1.8;
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+}
+.note{font-size:13px;color:#5c6d7c;line-height:1.7}
+.chart{
+  height:320px;
+  margin-top:16px;
+  padding:8px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+}
+.chart canvas{width:100%!important;height:100%!important}
+
+.head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+}
+.switch{
+  width:54px;
+  height:32px;
+  position:relative;
+  flex:0 0 auto;
+}
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+.switch span{
+  position:absolute;
+  inset:0;
+  background:#aeb7c3;
+  border-radius:32px;
+  cursor:pointer;
+}
+.switch span:before{
+  content:"";
+  position:absolute;
+  width:26px;
+  height:26px;
+  left:3px;
+  top:3px;
+  background:white;
+  border-radius:50%;
+  transition:.2s;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.switch input:checked+span{background:#1565c0}
+.switch input:checked+span:before{transform:translateX(22px)}
+
+.summary,.income-summary{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+.summary>div,.income-summary>div{
+  padding:14px;
+  border-radius:12px;
+  border:2px solid rgba(255,255,255,.9);
+}
+.summary>div:nth-child(1),.income-summary>div:nth-child(1){background:#e6f5ff;border-color:#9bdcff}
+.summary>div:nth-child(2),.income-summary>div:nth-child(2){background:#e8fff3;border-color:#a5e7c5}
+.summary>div:nth-child(3),.income-summary>div:nth-child(3){background:#f0eaff;border-color:#c7b4ff}
+.summary>div:nth-child(4),.income-summary>div:nth-child(4){background:#fff2de;border-color:#ffd09a}
+.summary>div:nth-child(5),.income-summary>div:nth-child(5){background:#ffe7ef;border-color:#ffb4ca}
+.summary strong,.income-summary strong{
+  display:block;
+  font-size:22px;
+  margin-top:4px;
+}
+.income-summary small{
+  display:block;
+  font-size:.78rem;
+  font-weight:400;
+  margin-top:4px;
+  opacity:.8;
+}
+
+@media(max-width:900px){
+  .grid{grid-template-columns:1fr 1fr}
+  .summary,.income-summary{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){
+  body{padding:12px}
+  .grid,.summary,.income-summary{grid-template-columns:1fr}
+  .chart{height:280px}
+  .hero h1{font-size:2rem}
+}

@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神戸星城AI進路コンパス v5</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+min-height:100vh;
+overflow-x:hidden;
+background:linear-gradient(
+-45deg,
+#4338ca,
+#7c3aed,
+#0ea5e9,
+#10b981
+);
+background-size:400% 400%;
+animation:bgMove 15s ease infinite;
+color:white;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.container{
+width:min(95%,1100px);
+margin:auto;
+padding:30px;
+}
+
+.glass{
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.15);
+border-radius:30px;
+padding:30px;
+box-shadow:0 20px 50px rgba(0,0,0,.3);
+}
+
+.title{
+font-size:2rem;
+font-weight:700;
+text-align:center;
+margin-bottom:15px;
+}
+
+.subtitle{
+text-align:center;
+opacity:.85;
+margin-bottom:20px;
+}
+
+.progress{
+width:100%;
+height:12px;
+background:rgba(255,255,255,.1);
+border-radius:999px;
+overflow:hidden;
+margin-bottom:20px;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:white;
+transition:.4s;
+}
+
+.step{
+font-size:.95rem;
+opacity:.8;
+margin-bottom:15px;
+}
+
+.question{
+font-size:1.5rem;
+margin-bottom:15px;
+font-weight:700;
+}
+
+.option-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+}
+
+.option{
+padding:18px;
+border-radius:18px;
+background:rgba(255,255,255,.08);
+cursor:pointer;
+transition:.25s;
+text-align:center;
+}
+
+.option:hover{
+transform:translateY(-4px) scale(1.02);
+background:rgba(255,255,255,.18);
+}
+
+.hidden{
+display:none;
+}
+
+.center-stage{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:300px;
+}
+
+.big-card{
+width:500px;
+max-width:90%;
+padding:30px;
+text-align:center;
+background:rgba(255,255,255,.14);
+border-radius:24px;
+backdrop-filter:blur(20px);
+font-size:1.4rem;
+font-weight:700;
+animation:pop .5s ease;
+}
+
+@keyframes pop{
+from{
+opacity:0;
+transform:scale(.8);
+}
+to{
+opacity:1;
+transform:scale(1);
+}
+}
+
+.result-top{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+.mini-card{
+background:rgba(255,255,255,.12);
+padding:15px;
+border-radius:18px;
+min-width:180px;
+animation:slideIn .5s ease;
+}
+
+@keyframes slideIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:none;
+}
+}
+
+.result-area{
+margin-top:20px;
+}
+
+.result-card{
+background:rgba(255,255,255,.12);
+padding:18px;
+border-radius:18px;
+margin-bottom:15px;
+animation:slideIn .5s ease;
+}
+
+input[type=number]{
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+margin-top:6px;
+margin-bottom:12px;
+}
+
+button{
+padding:12px 20px;
+border:none;
+border-radius:14px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.loading{
+font-size:1.3rem;
+text-align:center;
+padding:60px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="glass">
+
+<div class="title">
+🎓 神戸星城AI進路コンパス v5
+</div>
+
+<div class="subtitle">
+AI進路診断システム
+</div>
+
+<div id="step" class="step"></div>
+
+<div class="progress">
+<div id="bar" class="progress-bar"></div>
+</div>
+
+<div id="app"></div>
+
+</div>
+
+</div>
+
+<script>
+
+const questions = [
+
+{
+title:"学年",
+options:["高校1年","高校2年","高校3年"]
+},
+
+{
+title:"コース",
+options:[
+"特進S",
+"特進A",
+"特進B",
+"未来総合"
+]
+},
+
+{
+title:"偏差値",
+options:[
+"40未満",
+"40〜44",
+"45〜49",
+"50〜54",
+"55〜59",
+"60〜64",
+"65以上"
+]
+},
+
+{
+title:"評定平均",
+options:[
+"2.0","2.1","2.2","2.3","2.4","2.5","2.6","2.7","2.8","2.9",
+"3.0","3.1","3.2","3.3","3.4","3.5","3.6","3.7","3.8","3.9",
+"4.0","4.1","4.2","4.3","4.4","4.5","4.6","4.7","4.8","4.9",
+"5.0"
+]
+},
+
+{
+title:"希望進路",
+options:[
+"国公立大学",
+"私立大学",
+"専門学校",
+"就職"
+]
+},
+
+{
+title:"興味分野",
+options:[
+"経営",
+"会計",
+"商学",
+"経済",
+"IT",
+"情報",
+"教育",
+"心理",
+"国際",
+"法律"
+]
+}
+
+];
+
+let current = 0;
+let answers = [];
+
+const app = document.getElementById("app");
+const step = document.getElementById("step");
+const bar = document.getElementById("bar");
+function renderQuestion(){
+
+step.innerText =
+`質問 ${current+1}/7`;
+
+bar.style.width =
+`${((current+1)/7)*100}%`;
+
+const q = questions[current];
+
+app.innerHTML = `
+
+<div class="question">
+${q.title}
+</div>
+
+<div class="option-grid">
+
+${q.options.map(option => `
+
+<div
+class="option"
+onclick="selectOption('${option}')"
+>
+${option}
+</div>
+
+`).join("")}
+
+</div>
+
+`;
+
+}
+
+function selectOption(value){
+
+answers.push(value);
+
+current++;
+
+if(current >= questions.length){
+
+renderCertificateInput();
+return;
+
+}
+
+renderQuestion();
+
+}
+
+function renderCertificateInput(){
+
+step.innerText = "質問 7/7";
+
+bar.style.width = "100%";
+
+app.innerHTML = `
+
+<div class="question">
+
+📜 資格・検定取得数
+
+</div>
+
+<label>
+1級
+<input id="grade1" type="number" value="0" min="0">
+</label>
+
+<label>
+準1級
+<input id="gradePre1" type="number" value="0" min="0">
+</label>
+
+<label>
+2級
+<input id="grade2" type="number" value="0" min="0">
+</label>
+
+<label>
+準2級
+<input id="gradePre2" type="number" value="0" min="0">
+</label>
+
+<label>
+3級
+<input id="grade3" type="number" value="0" min="0">
+</label>
+
+<button onclick="startAnalysis()">
+診断開始
+</button>
+
+`;
+
+}
+
+function startAnalysis(){
+
+const g1 =
+Number(document.getElementById("grade1").value);
+
+const gp1 =
+Number(document.getElementById("gradePre1").value);
+
+const g2 =
+Number(document.getElementById("grade2").value);
+
+const gp2 =
+Number(document.getElementById("gradePre2").value);
+
+const g3 =
+Number(document.getElementById("grade3").value);
+
+const qualificationPoint =
+
+(g1 * 5) +
+(gp1 * 4) +
+(g2 * 3) +
+(gp2 * 2) +
+(g3 * 1);
+
+answers.push(qualificationPoint);
+
+app.innerHTML = `
+
+<div class="loading">
+
+✨ 診断結果を作成中...
+
+</div>
+
+`;
+
+setTimeout(() => {
+
+showResult(
+qualificationPoint
+);
+
+},800);
+
+}
+
+function showResult(point){
+
+app.innerHTML = `
+
+<div class="center-stage">
+
+<div
+class="big-card"
+id="mainCard"
+>
+
+🏆 おすすめ候補
+
+</div>
+
+</div>
+
+`;
+
+setTimeout(() => {
+
+showRecommend(point);
+
+},1200);
+
+}
+
+function showRecommend(point){
+
+const course = answers[1];
+const hensachi = answers[2];
+const hyoutei = parseFloat(answers[3]);
+const route = answers[4];
+const field = answers[5];
+
+let recommend = [];
+let challenge = [];
+
+if(route === "私立大学"){
+
+if(field === "経営" || field === "会計" || field === "商学"){
+
+recommend = [
+"甲南大学",
+"大阪経済大学",
+"神戸学院大学",
+"流通科学大学"
+];
+
+challenge = [
+"関西学院大学",
+"近畿大学"
+];
+
+}
+
+else if(field === "IT" || field === "情報"){
+
+recommend = [
+"神戸学院大学",
+"流通科学大学",
+"大阪経済大学",
+"京都先端科学大学"
+];
+
+challenge = [
+"近畿大学",
+"関西大学"
+];
+
+}
+
+else{
+
+recommend = [
+"神戸学院大学",
+"甲南大学",
+"関西国際大学",
+"流通科学大学"
+];
+
+challenge = [
+"近畿大学",
+"関西学院大学"
+];
+
+}
+
+}
+
+else if(route === "国公立大学"){
+
+recommend = [
+"兵庫県立大学",
+"岡山大学",
+"和歌山大学",
+"滋賀大学"
+];
+
+challenge = [
+"神戸大学",
+"金沢大学"
+];
+
+}
+
+else if(route === "専門学校"){
+
+recommend = [
+"大原簿記専門学校神戸校",
+"神戸電子専門学校",
+"HAL大阪",
+"ECCコンピュータ専門学校"
+];
+
+challenge = [
+"大原簿記法律専門学校大阪校",
+"大原法律公務員専門学校神戸校"
+];
+
+}
+
+else{
+
+recommend = [
+"JR西日本",
+"日本郵便",
+"神戸製鋼所",
+"みなと銀行"
+];
+
+challenge = [
+"兵庫県警察",
+"防衛省・自衛隊"
+];
+
+}
+
+let rate = 70;
+
+if(hensachi === "40未満") rate = 45;
+if(hensachi === "40〜44") rate = 55;
+if(hensachi === "45〜49") rate = 65;
+if(hensachi === "50〜54") rate = 78;
+if(hensachi === "55〜59") rate = 86;
+if(hensachi === "60〜64") rate = 92;
+if(hensachi === "65以上") rate = 97;
+
+rate += Math.floor(point / 2);
+
+if(rate > 99){
+rate = 99;
+}
+
+const stars =
+point >= 15 ? "★★★★★" :
+point >= 10 ? "★★★★☆" :
+point >= 6 ? "★★★☆☆" :
+point >= 3 ? "★★☆☆☆" :
+"★☆☆☆☆";
+
+app.innerHTML = `
+
+<div class="result-top" id="resultTop">
+</div>
+
+<div class="center-stage">
+
+<div class="big-card" id="centerCard">
+
+🏆 おすすめ候補
+
+<br><br>
+
+${recommend[0]}
+
+</div>
+
+</div>
+
+`;
+
+const resultTop =
+document.getElementById("resultTop");
+
+setTimeout(()=>{
+
+resultTop.innerHTML += `
+
+<div class="mini-card">
+
+🏆<br>
+${recommend[0]}
+
+</div>
+
+`;
+
+document.querySelector(".center-stage").innerHTML = `
+
+<div class="big-card">
+
+📊 合格可能性
+
+<br><br>
+
+${rate}%
+
+</div>
+
+`;
+
+},1200);
+
+setTimeout(()=>{
+
+resultTop.innerHTML += `
+
+<div class="mini-card">
+
+📊<br>
+${rate}%
+
+</div>
+
+`;
+
+document.querySelector(".center-stage").innerHTML = `
+
+<div class="big-card">
+
+📜 資格評価
+
+<br><br>
+
+${stars}
+
+<br>
+
+${point}pt
+
+</div>
+
+`;
+
+},2400);
+
+setTimeout(()=>{
+
+resultTop.innerHTML += `
+
+<div class="mini-card">
+
+📜<br>
+${stars}
+
+</div>
+
+`;
+
+document.querySelector(".center-stage").innerHTML = `
+
+<div class="big-card">
+
+🚀 チャレンジ校①
+
+<br><br>
+
+${challenge[0]}
+
+<br><br>
+
+偏差値 +1帯
+
+<br>
+
+評定平均 +0.2
+
+<br>
+
+資格 +2pt
+
+</div>
+
+`;
+
+},3600);
+
+setTimeout(()=>{
+
+document.querySelector(".center-stage").innerHTML = `
+
+<div class="big-card">
+
+🚀 チャレンジ校②
+
+<br><br>
+
+${challenge[1]}
+
+<br><br>
+
+偏差値 +1帯
+
+<br>
+
+評定平均 +0.3
+
+<br>
+
+資格 +3pt
+
+</div>
+
+`;
+
+},4800);
+
+setTimeout(()=>{
+
+app.innerHTML += `
+
+<div class="result-area">
+
+<div class="result-card">
+
+🏆 おすすめ候補
+
+<br><br>
+
+① ${recommend[0]}
+
+<br>
+
+② ${recommend[1]}
+
+<br>
+
+③ ${recommend[2]}
+
+<br>
+
+④ ${recommend[3]}
+
+</div>
+
+<div class="result-card">
+
+💰 学費目安
+
+<br><br>
+
+国公立：約250万円
+
+<br>
+
+私立文系：約400万円
+
+<br>
+
+私立理系：約540万円
+
+<br>
+
+専門学校：約400万円
+
+</div>
+
+<div class="result-card">
+
+🤖 AIコメント
+
+<br><br>
+
+現在の成績なら
+
+${recommend[0]}
+
+が有力候補です。
+
+<br><br>
+
+評定平均を0.2〜0.3上げ、
+
+資格をあと2〜3ポイント取得すると
+
+チャレンジ校も視野に入ります。
+
+</div>
+
+</div>
+
+`;
+
+document.querySelector(".center-stage").innerHTML = "";
+
+},6200);
+
+}
+
+renderQuestion();
+
+</script>
+</body>
+</html>

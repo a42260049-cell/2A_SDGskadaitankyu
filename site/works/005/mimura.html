@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>都道府県一周旅｜スマホ操作ゲーム</title>
+<style>
+:root{--bg:#fff8ec;--card:#fff;--ink:#3f3428;--accent:#e78b52;--green:#6ea66e;--line:#eadbc7}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(#fff8ec,#edf7ed);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:var(--ink)}
+button,input{font:inherit}button{cursor:pointer;border:0;border-radius:16px;padding:14px 20px;background:var(--accent);color:white;font-weight:800;box-shadow:0 3px 0 #c56e3d}button.secondary{background:white;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.wrap{max-width:1050px;margin:auto;padding:22px}.hero,.card{background:var(--card);border:2px solid var(--line);border-radius:26px;padding:24px;box-shadow:0 8px 30px #b98d4a15}
+h1{margin:6px 0 10px;font-size:clamp(30px,5vw,48px);line-height:1.15}h1 span{color:var(--accent)}h2{margin-top:0}.sub{color:#786b5e}.hidden{display:none!important}.start-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:18px auto 4px}.start-actions button{min-width:150px}.settings-modal{position:fixed;inset:0;background:rgba(30,25,20,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}.settings-card{width:min(520px,100%);background:white;border-radius:26px;padding:24px;box-shadow:0 18px 60px rgba(0,0,0,.25)}
+.logo{font-size:78px;text-align:center;animation:bounce 1.7s infinite}.badge-title,.place-title-emoji{display:block;font-size:2.35rem;line-height:1.1;margin-bottom:4px}
+.chapter{display:inline-block;padding:7px 13px;border-radius:999px;background:#f8df9b;font-weight:800;font-size:13px}
+.setup{max-width:620px;margin:20px auto}.setup input{width:100%;padding:15px;border:2px solid var(--line);border-radius:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.top{overflow:hidden}.skyline{text-align:center;font-size:22px;letter-spacing:5px;margin-bottom:8px}
+.stats{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0}.pill{padding:8px 12px;border-radius:999px;background:#f6eadb}.progress{height:12px;background:#eee0cf;border-radius:99px;overflow:hidden}.bar{height:100%;background:var(--green);width:0;transition:.4s}
+.map{position:relative;background:#dfeeda;border:2px solid #bdd1b8;border-radius:22px;padding:15px;min-height:230px}.route{display:flex;gap:7px;flex-wrap:wrap}.state{font-size:11px;text-align:center;width:56px}.dot{width:17px;height:17px;border-radius:50%;background:#9ab98f;border:3px solid white;margin:auto}.dot.current{background:var(--accent);transform:scale(1.4)}.mapdog{position:absolute;left:0;top:0;font-size:31px;line-height:1;z-index:3;transition:left .7s ease,top .7s ease;filter:drop-shadow(0 2px 1px rgba(0,0,0,.18));pointer-events:none}.mapcompanion{position:absolute;left:0;top:0;font-size:30px;line-height:1;z-index:2;transition:left .7s ease,top .7s ease;filter:drop-shadow(0 2px 1px rgba(0,0,0,.16));pointer-events:none}
+.challenge{text-align:center;min-height:250px;display:flex;flex-direction:column;justify-content:center;align-items:center}.big{font-size:65px;animation:float 1.5s infinite}.small{font-size:13px;color:#786b5e}.toast{position:fixed;z-index:50;top:18px;left:50%;transform:translateX(-50%);background:#3f3428;color:white;padding:13px 20px;border-radius:999px;font-weight:800}
+.lesson{text-align:center;max-width:780px;margin:auto}.pad{height:230px;border:4px dashed #d6c19d;border-radius:25px;background:#fffaf1;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;overflow:hidden;position:relative}.target{padding:24px 34px;background:#f8df9b;border-radius:20px;font-size:22px;font-weight:900}.tap-target{border:5px solid #f28c28;box-shadow:0 0 0 3px rgba(242,140,40,.15);transition:.15s}.tap-target.active{transform:scale(1.01);box-shadow:0 0 0 6px rgba(242,140,40,.22)}.tap-target.done{background:#dff3d8;border-color:#55a94b}.tap-guide{margin:10px auto;font-weight:900;color:#9a4d00}.status{margin:14px;font-weight:800}.steps{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:15px}.step{padding:7px 11px;background:#eee5d7;border-radius:999px;font-size:12px}.step.done{background:#dfeeda}.step.current{background:#f8df9b;font-weight:900}
+.flickbox{width:90%;}.flickbox input{width:100%;padding:15px;border:2px solid var(--line);border-radius:14px}.copybox{width:90%}.copybox input{width:100%;padding:15px;border:2px solid var(--line);border-radius:14px;margin-bottom:10px}
+.companions{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}.companion{position:relative;border:3px solid var(--line);border-radius:24px;background:#fff;padding:16px 10px;cursor:pointer;transition:.2s;box-shadow:0 7px 18px rgba(0,0,0,.08)}.companion:hover{transform:translateY(-4px);border-color:#f29ab2}.companion.selected{border-color:#e96f93;background:#fff4f7}.person{font-size:82px;line-height:1;margin-bottom:8px}.speech{background:#fff8df;border-radius:16px;padding:8px;font-size:14px;line-height:1.6;margin-bottom:8px;color:#222;font-weight:700;border:1px solid #ead99b}.companion strong{font-size:19px}.clearbox{margin-top:15px;padding:18px;border-radius:20px;background:#fff8df;border:2px solid #f1d77a;text-align:center}.clearbox button{margin-top:10px}.stagehint{font-size:13px;color:#666;margin-top:8px}@media(max-width:650px){.companions{grid-template-columns:1fr}.person{font-size:70px}}
+@keyframes bounce{50%{transform:translateY(-10px)}}@keyframes float{50%{transform:translateY(-8px)}}@media(max-width:650px){.wrap{padding:12px}.hero,.card{padding:17px}}
+.choiceBtn{min-height:64px;font-size:20px}.choiceBtn.done,.hold-card.done,.swipe-card.done{transform:scale(1.03)}.hold-card{background:#fff4c7;border:3px dashed #f0a400}.hold-meter{height:14px;background:#eee;border-radius:99px;overflow:hidden;margin:10px 0}.hold-meter span{display:block;width:0;height:100%;background:#f5a623;transition:width .05s}.swipe-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:28px 20px;background:#eef7ff;border:3px solid #7bb8e8;border-radius:20px;font-size:20px;touch-action:none}.copy-source{padding:12px;background:#f4f1eb;border:2px solid #ddd;border-radius:12px;margin-bottom:8px;font-weight:800}.flick-tip,.mini-panel{margin:14px 0;padding:12px;border-radius:14px;background:#f5f0ff;font-weight:700}.challenge p{font-size:18px;line-height:1.7}</style>
+</head>
+<body>
+<div class="wrap">
+<div id="toast" class="toast hidden"></div>
+
+<section id="start" class="hero">
+  <div class="logo">🐕</div>
+  <div class="badge-title">📱 スマホ操作を覚えながら日本を旅しよう</div>
+  <h1>都道府県一周旅</h1>
+  <p class="sub">47都道府県の景色をめぐりながら、タッチ・スワイプなどのスマホ操作を楽しく練習しよう！</p>
+  <div style="margin:8px 0 14px;font-weight:700">🎵 プレイするとポップな音楽が流れます</div><div class="start-actions"><button onclick="startSetup()">▶️ プレイ</button><button class="secondary" onclick="openSettings()">⚙️ 設定</button></div>
+  <div class="card setup hidden" id="nameStep">
+    <h2>🐾 旅のじゅんび</h2>
+    <input id="name" maxlength="12" placeholder="ニックネームを入力">
+    <br><br><button onclick="showCompanionChoice()">次へ ➜</button>
+  </div>
+
+  <div class="card setup hidden" id="companionStep">
+    <h2>🌷 旅のなかまを選ぼう</h2>
+    <p>名前を決めたら、いよいよ出発！<br>一緒に旅をするのはどっち？</p>
+    <div class="companions">
+      <button class="companion" id="grandmaBtn" onclick="chooseCompanion('grandma')">
+        <div class="person grandma">👵</div>
+        <div class="speech">「いっしょに<br>ゆっくり行こうね♪」</div>
+        <strong>おばあちゃん</strong>
+      </button>
+      <button class="companion" id="grandpaBtn" onclick="chooseCompanion('grandpa')">
+        <div class="person grandpa">👴</div>
+        <div class="speech">「楽しく操作を<br>覚えよう！」</div>
+        <strong>おじいちゃん</strong>
+      </button>
+    </div>
+    <button class="secondary" onclick="backToName()">← 名前にもどる</button>
+  </div>
+</section>
+
+<div id="settingsModal" class="settings-modal hidden" onclick="if(event.target===this)closeSettings()"><div class="settings-card"><h2>⚙️ 設定</h2><p>遊びやすさを調整できます。</p><label style="display:block;margin:14px 0"><b>🔊 音量</b><input id="startVolume" type="range" min="0" max="100" value="60" style="width:100%"></label><label style="display:flex;align-items:center;gap:10px;margin:14px 0"><input id="reduceMotion" type="checkbox"> 動きを少なくする</label><label style="display:flex;align-items:center;gap:10px;margin:14px 0"><input id="largeText" type="checkbox"> 文字を少し大きくする</label><button class="secondary" onclick="closeSettings()">閉じる</button></div></div>
+
+<section id="learn" class="hero hidden">
+  <div class="lesson">
+    <div class="badge-title">📱 本当に操作してみよう</div>
+    <h1 id="ltitle">1. タッチ</h1>
+    <p id="lexplain" class="sub"></p>
+    <div class="card">
+      <div id="licon" class="big">👆</div>
+      <h2 id="linstruction"></h2>
+      <div id="pad" class="pad"></div>
+      <div id="lstatus" class="status">操作してみよう！</div>
+      <button id="lnext" class="hidden" onclick="nextLesson()">できた！ 次の操作へ</button>
+    </div>
+    <div id="steps" class="steps"></div>
+    <p class="small">ここではボタンを押すだけではクリアできません。実際の指の動きを判定します。</p>
+  </div>
+</section>
+
+<section id="game" class="hidden">
+  <div class="hero top">
+    <div class="skyline">🗾　🏯　🌸　♨️　🐕　🌴</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <div><h1 id="greeting"></h1><div class="sub">北海道から沖縄まで、わんこと47都道府県一周！</div></div>
+      <button class="secondary" onclick="showMenu()">メニュー</button>
+    </div>
+    <div class="stats"><span class="pill">⭐ レベル <b id="level">1</b></span><span class="pill">🏆 スコア <b id="score">0</b></span><span class="pill">❤️ げんき <b id="energy">3</b></span><span class="pill">🔥 コンボ <b id="combo">0</b></span><span class="pill">⏱️ 残り <b id="timer">20</b>秒</span></div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+  </div><br>
+  <div class="grid">
+    <div class="card">
+      <div class="chapter" id="chapter">第1章</div>
+      <h2 id="placeTitle"></h2><p id="placeInfo"></p><div class="map"><b>日本一周ルート</b><div id="route" class="route" style="margin-top:12px"></div><div id="mapcompanion" class="mapcompanion">👵</div><div id="mapdog" class="mapdog">🐕</div></div>
+    </div>
+    <div class="card">
+      <h2>🎮 ミッション</h2><div id="challenge" class="challenge"></div>
+    </div>
+  </div>
+</section>
+
+<section id="menu" class="hero hidden">
+<h1>メニュー</h1>
+<div class="grid">
+<div class="card"><h2>🔊 音量</h2><input type="range" min="0" max="100" value="60" style="width:100%"></div>
+<div class="card"><h2>📱 操作を復習</h2><p>タッチ・スワイプ・フリック・戻る・コピー＆ペースト・用語</p><button onclick="reviewLessons()">もう一度練習する</button></div>
+</div><br><button onclick="backGame()">旅にもどる</button>
+</section>
+</div>
+
+<script>
+const lessons=[
+{n:"タッチ",icon:"👆",ex:"画面を指で1回、軽く触れる操作。",ins:"黄色い場所を1回タッチしてください。",type:"tap"},
+{n:"スワイプ",icon:"↔️",ex:"指を画面につけたまま、横や縦に動かす操作。",ins:"黄色い場所を左から右へスワイプしてください。",type:"swipe"},
+{n:"フリック入力",icon:"🔤",ex:"文字キーから指を上下左右へ動かして文字を選ぶ入力方法。",ins:"入力欄に「きょうと」と入力してください。",type:"flick"},
+{n:"戻る",icon:"↩️",ex:"前の画面に戻るための操作。",ins:"「戻る」を押して前の画面に戻ってください。",type:"back"},
+{n:"コピー＆ペースト",icon:"📋",ex:"文字をコピーして、別の場所へ貼り付ける操作。",ins:"文字をコピーして、下の入力欄へ貼り付けてください。",type:"copy"},
+{n:"スマホ用語",icon:"💡",ex:"よく使う言葉もゲーム中に覚えよう。",ins:"「スワイプ」の意味はどれ？",type:"term"}
+];
+let li=0, lessonOK=false, pressTimer, sx=0,sy=0,startDist=0;
+
+function startSetup(){
+ document.getElementById("nameStep").classList.remove("hidden");
+ document.getElementById("name").focus();
+ window.scrollTo({top:document.getElementById("nameStep").offsetTop-20,behavior:"smooth"});
+}
+function openSettings(){document.getElementById("settingsModal").classList.remove("hidden");}
+function closeSettings(){document.getElementById("settingsModal").classList.add("hidden");}
+document.addEventListener("change",e=>{
+ if(e.target.id==="reduceMotion")document.body.style.setProperty("--motion",e.target.checked?"0s":".2s");
+ if(e.target.id==="largeText")document.body.style.fontSize=e.target.checked?"18px":"";
+ if(e.target.id==="startVolume"){musicVolume=Number(e.target.value)/100;if(musicCtx)musicVolume=Number(e.target.value)/100;}
+});
+
+function showCompanionChoice(){
+ const n=document.getElementById("name").value.trim();
+ if(!n){toast("🌱 まずニックネームを入力してね");return;}
+ document.getElementById("nameStep").classList.add("hidden");
+ document.getElementById("companionStep").classList.remove("hidden");
+}
+function backToName(){
+ document.getElementById("companionStep").classList.add("hidden");
+ document.getElementById("nameStep").classList.remove("hidden");
+}
+function chooseCompanion(kind){
+ window.player=document.getElementById("name").value.trim()||"たびびと";
+ window.companion=kind;
+ document.querySelectorAll(".companion").forEach(x=>x.classList.remove("selected"));
+ document.getElementById(kind==='grandma'?"grandmaBtn":"grandpaBtn").classList.add("selected");
+ const who=kind==='grandma'?"おばあちゃん":"おじいちゃん";
+ toast("🌸 "+who+"と旅に出発！");
+ setTimeout(begin,350);
+}
+let musicCtx=null,musicTimer=null,musicOn=true,musicVolume=0.35;
+function startPopMusic(){
+ if(!musicOn || musicTimer) return;
+ try{
+  musicCtx=musicCtx||new (window.AudioContext||window.webkitAudioContext)();
+  if(musicCtx.state==='suspended') musicCtx.resume();
+  // かわいくてふわっとした、オリジナルの旅ゲームBGM。
+  // 特定作品の曲やメロディは使わず、丸い音色・小さな跳ね感・きらきらした音で表現。
+  const melody=[523.25,587.33,659.25,783.99,659.25,587.33,523.25,392.00,
+                440.00,523.25,659.25,880.00,783.99,659.25,587.33,523.25];
+  const bass=[261.63,261.63,220.00,246.94,196.00,220.00,246.94,261.63];
+  let i=0;
+  const tone=(freq,now,dur,type,level,attack=0.03,release=0.12)=>{
+   const o=musicCtx.createOscillator(), g=musicCtx.createGain();
+   o.type=type; o.frequency.setValueAtTime(freq,now);
+   g.gain.setValueAtTime(0.0001,now);
+   g.gain.linearRampToValueAtTime(level,now+attack);
+   g.gain.setValueAtTime(level,Math.max(now+attack,now+dur-release));
+   g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
+   o.connect(g); g.connect(musicCtx.destination); o.start(now); o.stop(now+dur+0.03);
+  };
+  const beat=()=>{
+   if(!musicCtx||!musicOn)return;
+   const now=musicCtx.currentTime, v=musicVolume;
+   // ぽんぽん跳ねる主旋律
+   tone(melody[i%melody.length],now,0.30,'triangle',v*0.055,0.025,0.10);
+   // ふわっとした伴奏
+   tone(melody[(i+4)%melody.length]*0.5,now+0.07,0.42,'sine',v*0.018,0.08,0.18);
+   // やさしい低音
+   if(i%2===0) tone(bass[(i/2)%bass.length],now,0.48,'sine',v*0.025,0.04,0.18);
+   // 小さな「きらっ」を時々
+   if(i%8===3){
+    tone(1046.50,now+0.02,0.18,'sine',v*0.022,0.01,0.08);
+    tone(1318.51,now+0.12,0.22,'sine',v*0.016,0.01,0.10);
+   }
+   i++;
+  };
+  beat(); musicTimer=setInterval(beat,240);
+ }catch(e){}
+}
+function stopPopMusic(){if(musicTimer){clearInterval(musicTimer);musicTimer=null;} if(musicCtx){musicCtx.close();musicCtx=null;}}
+function playClearSparkle(){
+ try{
+  musicCtx=musicCtx||new (window.AudioContext||window.webkitAudioContext)();
+  if(musicCtx.state==='suspended') musicCtx.resume();
+  const now=musicCtx.currentTime;
+  const notes=[1046.50,1318.51,1567.98,2093.00,2637.02];
+  notes.forEach((freq,i)=>{
+   const o=musicCtx.createOscillator(),g=musicCtx.createGain();
+   o.type='sine'; o.frequency.setValueAtTime(freq,now+i*0.075);
+   const t=now+i*0.075;
+   g.gain.setValueAtTime(0.0001,t);
+   g.gain.linearRampToValueAtTime(musicVolume*0.12,t+0.015);
+   g.gain.exponentialRampToValueAtTime(0.0001,t+0.42);
+   o.connect(g);g.connect(musicCtx.destination);o.start(t);o.stop(t+0.45);
+  });
+ }catch(e){}
+}
+function begin(){
+ startPopMusic();
+ document.getElementById("start").classList.add("hidden");
+ document.getElementById("learn").classList.add("hidden");
+ document.getElementById("game").classList.remove("hidden");
+ idx=0; score=0; energy=3; level=1; combo=0; taps=0;
+ // 毎回ちがう順番になるよう、操作タイプをシャッフル。特別ミッションは県に合わせて固定。
+ const baseOps=["tap","swipe","flick","tap","term","swipe","quiz","back","copy","flick","tap","copy","swipe","repeat","term","tap","back","flick","copy","swipe","tap","quiz","flick","term","copy","tap","swipe","back","flick","tap","copy","term","swipe","repeat","tap","flick","quiz","copy","swipe","tap","back","term","flick","copy","tap","swipe"];
+ opOrder=[...baseOps];
+ for(let i=opOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opOrder[i],opOrder[j]]=[opOrder[j],opOrder[i]];}
+ // 同じ操作が連続したら入れ替えて、できるだけ変化をつける。
+ for(let i=1;i<opOrder.length;i++){if(opOrder[i]===opOrder[i-1]){const j=opOrder.findIndex((x,k)=>k>i&&x!==opOrder[i-1]);if(j>0)[opOrder[i],opOrder[j]]=[opOrder[j],opOrder[i]];}}
+ window.stageClearing=false;
+ const who=window.companion==='grandpa'?"おじいちゃん":"おばあちゃん";
+ document.getElementById("greeting").textContent=window.player+"さん・"+who+"・🐕の旅";
+ document.getElementById("mapcompanion").textContent=window.companion==='grandpa'?"👴":"👵";
+ toast("🗾 さあ、都道府県一周旅スタート！");
+ render();
+}
+function showLesson(){
+ const l=lessons[li];lessonOK=false;
+ document.getElementById("ltitle").textContent=`${li+1}. ${l.n}`;
+ document.getElementById("lexplain").textContent=l.ex;
+ document.getElementById("licon").textContent=l.icon;
+ document.getElementById("linstruction").textContent=l.ins;
+ document.getElementById("lstatus").textContent="実際に操作してみよう！";
+ document.getElementById("lnext").classList.add("hidden");
+ document.getElementById("steps").innerHTML=lessons.map((x,i)=>`<span class="step ${i<li?'done':''} ${i===li?'current':''}">${i<li?'✓ ':''}${x.icon} ${x.n}</span>`).join("");
+ const pad=document.getElementById("pad"); pad.innerHTML="";
+ pad.onpointerdown=pad.onpointermove=pad.onpointerup=pad.onpointercancel=null;
+ if(l.type==="tap"){
+   pad.innerHTML='<div id="target" class="target">👆 ここをタッチ</div>';
+   pad.onpointerdown=e=>{if(!lessonOK)completeLesson()};
+ }else if(l.type==="hold"){
+   pad.innerHTML='<div class="target">⏱️ ここを長押し</div>';
+   pad.onpointerdown=()=>{pressTimer=setTimeout(()=>completeLesson(),1000)};
+   pad.onpointerup=pad.onpointerleave=()=>clearTimeout(pressTimer);
+ }else if(l.type==="swipe"){
+   pad.innerHTML='<div class="target">← ここから →</div>';
+   pad.onpointerdown=e=>{sx=e.clientX;sy=e.clientY};
+   pad.onpointerup=e=>{if(e.clientX-sx>100 && Math.abs(e.clientY-sy)<100)completeLesson()};
+ }else if(l.type==="tap"){
+   pad.innerHTML='<div class="target">🤏 2本の指をここへ</div>';
+   pad.ontouchstart=e=>{if(e.touches.length===2)startDist=dist(e.touches[0],e.touches[1])};
+   pad.ontouchmove=e=>{if(e.touches.length===2 && dist(e.touches[0],e.touches[1])-startDist>45)completeLesson()};
+ }else if(l.type==="flick"){
+   pad.innerHTML='<div class="flickbox"><input id="flickInput" placeholder="きょうと と入力"><br><br><button onclick="checkFlick()">入力を確認</button></div>';
+ }else if(l.type==="back"){
+   pad.innerHTML='<button class="secondary" onclick="completeLesson()">← 戻る</button>';
+ }else if(l.type==="copy"){
+   pad.innerHTML='<div class="copybox"><input id="copySource" value="きびだんご" readonly><button onclick="doCopy()">コピー</button><br><input id="pasteTarget" placeholder="ここに貼り付け"><button class="secondary" onclick="doPaste()">貼り付け</button></div>';
+ }else{
+   pad.innerHTML='<div class="choices"><button onclick="term(false)">画面を押す</button><button onclick="term(true)">指をつけたまま動かす</button></div>';
+ }
+}
+function dist(a,b){return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}
+function completeLesson(){
+ if(lessonOK)return;lessonOK=true;
+ document.getElementById("lstatus").textContent="🎉 できた！操作を覚えました";
+ document.getElementById("lnext").classList.remove("hidden");
+ document.getElementById("pad").classList.add("done");
+}
+function checkFlick(){
+ const v=document.getElementById("flickInput").value.trim();
+ if(v==="きょうと"||v==="京都")completeLesson();else document.getElementById("lstatus").textContent="💡 「きょうと」と入力してみよう";
+}
+function doCopy(){
+ copiedText=document.getElementById("copySource").value;
+ try{navigator.clipboard?.writeText(copiedText)}catch(e){}
+ document.getElementById("lstatus").textContent="📋 コピーできた！次は貼り付け";
+}
+let copiedText="";
+function doPaste(){if(!copiedText){document.getElementById("lstatus").textContent="💡 先にコピーを押してね";return}document.getElementById("pasteTarget").value=copiedText;completeLesson()}
+function term(ok){if(ok)completeLesson();else document.getElementById("lstatus").textContent="💡 指をつけたまま動かすのがスワイプです"}
+function nextLesson(){
+ if(li<lessons.length-1){li++;showLesson()}
+ else {document.getElementById("learn").classList.add("hidden");document.getElementById("game").classList.remove("hidden");document.getElementById("greeting").textContent=window.player+"さんの旅";toast("🐕 全操作クリア！旅へ出発！");render()}
+}
+function reviewLessons(){document.getElementById("menu").classList.add("hidden");document.getElementById("learn").classList.remove("hidden");li=0;showLesson()}
+
+const places=[
+["北海道","海鮮・五稜郭","👆タッチ","カニをタッチ！","北日本"],["青森","りんご・ねぶた祭り・白神山地・温泉","👆タッチ","りんごをタッチ！","北日本"],["岩手","わんこそば・龍泉洞・温泉","👆タッチ","わんこそばをタッチ！","北日本"],["宮城","牛タン・ずんだ餅","↔️スワイプ","画面をスワイプ！","北日本"],["秋田","きりたんぽ・秋田犬","👆タッチ","秋田犬をタッチ！","北日本"],["山形","さくらんぼ・日本酒","👆タッチ","さくらんぼをタッチ！","北日本"],["福島","あかべこ","👆タッチ","あかべこをタッチ！","北日本"],
+["栃木","とちおとめ・日光東照宮","❓クイズ","クイズに答えよう！","関東"],["群馬","富岡製糸場・草津温泉","♨️休憩","温泉でげんき回復！","関東"],["埼玉","盆栽","↔️スワイプ","盆栽をスワイプ！","関東"],["千葉","九十九里浜・ディズニーランド","👆タッチ","好きな場所をタッチ！","関東"],["東京","東京タワー・浅草","↩️戻る","戻る操作を使おう！","関東"],["神奈川","中華街・鎌倉","👆タッチ","行きたい場所をタッチ！","関東"],
+["新潟","コシヒカリ・日本酒","👆タッチ","おにぎりを作ろう！","中部"],["富山","黒部ダム","👆タッチ","ダムをタッチ！","中部"],["福井","恐竜・越前蟹","👆タッチ","恐竜をタッチ！","中部"],["山梨","フルーツ狩り・富士山","👆タッチ","富士山をタッチ！","中部"],["長野","地獄谷野猿公苑・軽井沢","👆タッチ","お猿さんをタッチ！","中部"],["岐阜","下呂温泉・岐阜城","♨️休憩","温泉でひと休み！","中部"],["静岡","お茶・富士山","♨️休憩","お茶休憩！","中部"],["愛知","名古屋城・ひつまぶし","👆タッチ","ひつまぶしをタッチ！","中部"],
+["三重","伊勢神宮・F1","⭐パワーアップ","わんこを強化！","近畿"],["滋賀","琵琶湖・白髭神社","↔️スワイプ","釣りをしよう！","近畿"],["京都","抹茶・金閣寺・銀閣寺","🔤フリック","「きょうと」と入力！","近畿"],["大阪","USJ","🔁連打","5回連打！","近畿"],["兵庫","お城巡り","👆タッチ","お城をタッチ！","近畿"],["奈良","奈良公園・鹿・大仏","👆タッチ","鹿をタッチ！","近畿"],["和歌山","白良浜・和歌山城","↔️スワイプ","フリスビーを投げよう！","近畿"],
+["鳥取","鳥取砂丘・松葉がに","👆タッチ","ラクダにきびだんご！","中国"],["島根","出雲大社・石見銀山","🔤フリック","願い事を入力！","中国"],["岡山","桃太郎・きびだんご","👆タッチ","きびだんごをゲット！","中国"],["広島","もみじ饅頭","👆タッチ","もみじ饅頭！","中国"],["山口","元乃隅神社・下関大橋","👆タッチ","景色を見よう！","中国"],
+["徳島","鳴門の渦潮・阿波おどり・雨乞の滝","↔️スワイプ","犬と散歩！","四国"],["香川","讃岐うどん","👆タッチ","うどんをタッチ！","四国"],["愛媛","柑橘類","👆タッチ","みかんをタッチ！","四国"],["高知","坂本龍馬・鰹のたたき","👆タッチ","龍馬に届けよう！","四国"],
+["福岡","博多ラーメン","📋コピー＆ペースト","トッピングをコピー！","九州"],["佐賀","竹崎カニ・佐賀牛・吉野ヶ里遺跡","👆タッチ","好きなものを選ぼう！","九州"],["長崎","稲佐山の夜景","👆タッチ","夜景をタッチ！","九州"],["熊本","熊本城","👆タッチ","熊本城！","九州"],["大分","別府温泉","♨️休憩","温泉で回復！","九州"],["宮崎","マンゴー・鵜戸神宮・天岩戸神社","👆タッチ","マンゴー！","九州"],["沖縄","シーサー・ちんすこう","🎉ゴール","日本一周ゴール！","ゴール"]
+];
+let idx=0,score=0,energy=3,level=1,combo=0, taps=0, opOrder=[];
+let stageTime=20, stageTimer=null, stageTimerLocked=false;
+const placeEmoji={"北海道":"🦀","青森":"🍎","岩手":"🍜","宮城":"🪆","秋田":"🐕","山形":"🍒","福島":"🐮","茨城":"🫘","栃木":"🍓","群馬":"♨️","埼玉":"🍜","千葉":"🌺","東京":"🗼","神奈川":"⛩️","新潟":"🍚","富山":"🦑","石川":"🟨","福井":"🦖","山梨":"🍇","長野":"🍎","岐阜":"🏠","静岡":"🗻","愛知":"🍗","三重":"🦪","滋賀":"⛩️","京都":"🏯","大阪":"🐙","兵庫":"🏯","奈良":"🦌","和歌山":"🍊","鳥取":"🐫","島根":"⛩️","岡山":"🍑","広島":"🍁","山口":"🐡","徳島":"💃","香川":"🍜","愛媛":"🍊","高知":"🐟","福岡":"🍜","佐賀":"🎈","長崎":"⛪","熊本":"🐻","大分":"♨️","宮崎":"🥭","鹿児島":"🌋","沖縄":"🌺"};
+
+function render(){
+ /* placeEmoji is global so mission() can use it too. */
+let p=places[idx]; startStageTimer(); document.getElementById("placeTitle").innerHTML=`<span class="place-title-emoji">${placeEmoji[p[0]]||"🗾"}</span><br>${p[0]}`;document.getElementById("placeInfo").textContent=p[1];document.getElementById("chapter").textContent=`第${Math.floor(idx/7)+1}章｜${p[4]}`;
+ document.getElementById("score").textContent=score;document.getElementById("level").textContent=level;document.getElementById("energy").textContent=energy;document.getElementById("combo").textContent=combo;document.getElementById("bar").style.width=((idx+1)/places.length*100)+"%";
+ document.getElementById("route").innerHTML=places.map((x,i)=>`<div class="state"><div class="dot ${i===idx?'current':''}"></div>${x[0]}</div>`).join("");
+ positionDog(); mission(p[2],p[3]);
+}
+function positionDog(){
+ const map=document.querySelector(".map"), dog=document.getElementById("mapdog"), companion=document.getElementById("mapcompanion"), dot=document.querySelectorAll("#route .dot")[idx];
+ if(!map||!dog||!dot)return;
+ const mr=map.getBoundingClientRect(), dr=dot.getBoundingClientRect();
+ const x=dr.left-mr.left+dr.width/2-dog.offsetWidth/2;
+ const y=dr.top-mr.top+dr.height/2-dog.offsetHeight/2;
+ dog.style.left=Math.max(4,Math.min(map.clientWidth-dog.offsetWidth-4,x))+"px";
+ dog.style.top=Math.max(30,Math.min(map.clientHeight-dog.offsetHeight-4,y))+"px";
+ if(companion){
+   const cx=x-31, cy=y-8;
+   companion.style.left=Math.max(4,Math.min(map.clientWidth-companion.offsetWidth-4,cx))+"px";
+   companion.style.top=Math.max(30,Math.min(map.clientHeight-companion.offsetHeight-4,cy))+"px";
+ }
+}
+window.addEventListener("resize",()=>setTimeout(positionDog,50));
+
+function mission(type,text){
+  const c=document.getElementById("challenge");
+  taps=0;
+  const p=places[idx];
+  // 47県で同じ操作が続かないよう、県ごとに操作を分散。
+  // 青森は「りんごを切る」、岩手は「ラーメン入力」を固定。
+  const operationPlan=[
+    "tap","swipe","iwateType","flick","tap","term","swipe",
+    "quiz","back","swipe","tap","back","copy","flick","tap",
+    "copy","swipe","tap","term","flick","copy","tap","swipe","flick",
+    "repeat","back","tap","swipe","tap","flick","tap","term","swipe",
+    "copy","flick","tap","swipe","flick","copy","tap","term","swipe",
+    "copy","tap","back","flick","tap","swipe"
+  ];
+  const specialOps={"青森":"appleCut","岩手":"iwateType","静岡":"tap"};
+  const op=specialOps[p[0]] || opOrder[idx] || operationPlan[idx] || "tap";
+  const stories=[
+   "旅のしおりから、", "観光案内を見ながら、", "おじいちゃん/おばあちゃんのスマホを手伝って、", "旅のメモを整理して、", "次の観光地を探して、"
+  ];
+  const actionNames={tap:"タップ",swipe:"スワイプ",flick:"フリック入力",back:"戻る",copy:"コピー＆ペースト",term:"スマホ用語"};
+  const story=stories[idx%stories.length];
+  if(op==="tap"){
+    const tapSets={"茨城":["🫘 納豆","🍣 寿司","🍕 ピザ"],"栃木":["🍓 とちおとめ","🍎 りんご","🍌 バナナ"],"群馬":["♨️ 草津温泉","🌴 海","🗼 東京タワー"],"埼玉":["🌳 盆栽","🦀 カニ","🐫 ラクダ"],"千葉":["🌺 花","🍇 ぶどう","🗻 富士山"],"東京":["🗼 東京タワー","🏯 大阪城","🗻 富士山"],"富山":["🦑 ホタルイカ","🗼 東京タワー","🐙 たこ焼き"],"石川":["🟨 金箔","🍎 りんご","🥟 餃子"],"岐阜":["🏠 白川郷","🗼 東京タワー","🌊 海"],"静岡":["🗻 富士山","🍵 お茶","🍎 りんご"],"三重":["🦪 真珠","🍎 りんご","🐙 たこ焼き"],"滋賀":["⛩️ 白鬚神社","🗻 富士山","🏯 大阪城"],"京都":["🏯 金閣寺","🗼 東京タワー","🦌 鹿"],"大阪":["🐙 たこ焼き","🍜 讃岐うどん","🍣 寿司"],"和歌山":["🍊 みかん","🍎 りんご","🍇 ぶどう"],"鳥取":["🐫 ラクダ","🦌 鹿","🐼 パンダ"],"島根":["⛩️ 出雲大社","🗼 東京タワー","🗻 富士山"],"岡山":["🍑 桃","🍡 きびだんご","🍌 バナナ"],"山口":["🐡 ふぐ","🍣 寿司","🦀 カニ"],"徳島":["💃 阿波おどり","🦌 鹿","🐫 ラクダ"],"佐賀":["🎈 バルーン","🦀 竹崎カニ","🥩 佐賀牛"],"大分":["♨️ 別府温泉","🗼 東京タワー","🏯 大阪城"],"鹿児島":["🌋 桜島","🍎 りんご","🗼 東京タワー"],
+      "北海道":["🦀 カニ","🦐 エビ","🐟 マグロ","🐙 タコ"],"岩手":["🍜 わんこそば","🍣 寿司","🍛 カレー"],"秋田":["🐕 秋田犬","🦌 鹿","🐼 パンダ"],"山形":["🍒 さくらんぼ","🍌 バナナ","🍍 パイナップル"],"福島":["🐮 あかべこ","🐘 ゾウ","🐧 ペンギン"],"千葉":["🌊 九十九里浜","🏔️ 富士山","🏯 姫路城"],"神奈川":["🥟 中華街","🍜 博多ラーメン","🦀 カニ"],"新潟":["🍙 コシヒカリのおにぎり","🍕 ピザ","🌮 タコス"],"富山":["🏔️ 黒部ダム","🗼 東京タワー","🏯 大阪城"],"福井":["🦖 恐竜","🐘 ゾウ","🦒 キリン"],"山梨":["🍇 ぶどう","🍎 りんご","🍊 みかん"],"長野":["🐒 お猿さん","🐼 パンダ","🐨 コアラ"],"愛知":["🍱 ひつまぶし","🍜 讃岐うどん","🥟 餃子"],"兵庫":["🏯 お城","🗼 東京タワー","🌴 ヤシの木"],"奈良":["🦌 鹿","🐘 ゾウ","🐧 ペンギン"],"岡山":["🍡 きびだんご","🍰 ショートケーキ","🍩 ドーナツ"],"広島":["🍁 もみじ饅頭","🍣 寿司","🍜 うどん"],"香川":["🍜 讃岐うどん","🍕 ピザ","🍔 ハンバーガー"],"愛媛":["🍊 みかん","🍎 りんご","🍌 バナナ"],"高知":["🐟 鰹のたたき","🦀 カニ","🍣 いくら"],"長崎":["🌃 稲佐山の夜景","🗼 東京タワー","🏔️ 富士山"],"熊本":["🏯 熊本城","🗼 東京タワー","🏰 姫路城"],"宮崎":["🥭 マンゴー","🍎 りんご","🍒 さくらんぼ"]
+    };
+    const choices=tapSets[p[0]]||["🎒 "+p[1].split("・")[0],"❌ ちがう名物","❌ ちがう観光地"];
+    if(p[0]==="静岡") choices=["🗻 富士山","🍵 お茶","🍎 りんご"];
+    c.innerHTML=`<div class="big">${placeEmoji[p[0]]||"🗾"}</div><h3>${p[0]}のご当地クイズ</h3><p><strong>${p[0]}に関連するものはどれ？</strong><br>正しいと思うものを<strong>1回タップ</strong>して選ぼう！</p><div class="choices" id="tapChoices">${choices.map((x,i)=>`<button class="choiceBtn" data-correct="${i===0}">${x}</button>`).join("")}</div><small>スマホでは、目的のものを1回軽く触る＝タップ</small>`;
+    c.querySelectorAll('.choiceBtn').forEach(b=>b.addEventListener('pointerdown',()=>{if(b.dataset.correct==='true'){b.classList.add('done');advance()}else toast('💡 ${p[0]}に関係するものを探してみよう！')}));
+  }else if(op==="appleCut"){
+    c.innerHTML=`<div class="big">🍎</div><h3>青森県のりんごカット</h3><p>りんごを<strong>指でスーッとなぞって切ろう！</strong></p><div id="appleArea" style="position:relative;width:280px;height:210px;margin:16px auto;border-radius:24px;background:#fff4d8;border:3px solid #e8b85c;overflow:hidden;touch-action:none;user-select:none;"><div id="appleFruit" style="position:absolute;left:75px;top:28px;font-size:100px;line-height:1;transition:.15s">🍎</div><div id="knife" style="position:absolute;display:none;font-size:54px;pointer-events:none;transform:rotate(-25deg)">🔪</div><div style="position:absolute;bottom:12px;left:0;right:0;font-weight:800">ここを横にスーッ！</div></div><div id="cutStatus" class="mini-panel">🍎 りんごを切ってみよう（あと1回）</div><small>画面を押したまま指を動かすと、スワイプの練習にもなるよ</small>`;
+    const area=document.getElementById('appleArea'), fruit=document.getElementById('appleFruit'), knife=document.getElementById('knife'), status=document.getElementById('cutStatus');
+    let sx=0,sy=0,cut=false;
+    area.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;cut=false;knife.style.display='block';knife.style.left=(e.offsetX-26)+'px';knife.style.top=(e.offsetY-28)+'px';area.setPointerCapture?.(e.pointerId)};
+    area.onpointermove=e=>{if(knife.style.display==='block'){knife.style.left=(e.offsetX-26)+'px';knife.style.top=(e.offsetY-28)+'px';if(Math.abs(e.clientX-sx)>80&&Math.abs(e.clientY-sy)<90)cut=true;}};
+    area.onpointerup=e=>{if(cut){fruit.innerHTML='🍎🔪';status.textContent='🎉 りんごを切れた！';status.classList.add('done');knife.style.display='none';setTimeout(advance,450);}else{knife.style.display='none';toast('💡 りんごの上を横にスーッとなぞろう');}};
+  }else if(op==="iwateType"){
+    const answer="ラーメン";
+    c.innerHTML=`<div class="big">🍜</div><h3>岩手県の文字入力チャレンジ</h3><p>旅のメモに<strong>「ラーメン」</strong>と入力してみよう！</p><input id="word" type="text" inputmode="text" autocomplete="off" autocapitalize="none" placeholder="ラーメン"><br><button onclick="wordCheck('ラーメン')">入力できた！</button><div class="flick-tip">💡 スマホのキーボードで文字を順番に入力してみよう</div>`;
+  }else if(op==="swipe"){
+    const swipeObjects={"宮城":"🥟","埼玉":"🌳","滋賀":"🎣","和歌山":"🥏","徳島":"🐕"};
+    const moving=swipeObjects[p[0]] || placeEmoji[p[0]] || "⭐";
+    const goLeft=Math.random()<0.5;
+    const startX=goLeft?215:18, endX=goLeft?18:215, arrow=goLeft?'⬅️':'➡️', direction=goLeft?'左':'右';
+    const goal={"宮城":`${direction}へ動かそう！`,"埼玉":`${direction}へ動かそう！`,"滋賀":`${direction}へ魚を動かそう！`,"和歌山":`${direction}へフリスビーを投げよう！`,"徳島":`${direction}へ犬を散歩させよう！`}[p[0]] || `${direction}へ動かそう！`;
+    c.innerHTML=`<div class="big">${placeEmoji[p[0]]||"🗾"}</div><h3>${p[0]}のスワイプチャレンジ</h3><p><strong>${moving}</strong>を指でつかんで、${direction}へスーッと動かそう！</p><div id="swipeArea" style="position:relative;width:300px;height:170px;margin:16px auto;border-radius:22px;background:#eef7ff;border:3px solid #7bb8e8;overflow:hidden;touch-action:none;user-select:none;"><div id="swipeMove" style="position:absolute;left:${startX}px;top:52px;font-size:72px;line-height:1;transition:left .2s">${moving}</div><div style="position:absolute;${goLeft?'left':'right'}:12px;top:72px;font-size:34px;opacity:.65">${arrow}</div><div style="position:absolute;bottom:10px;left:0;right:0;font-weight:800">${goal}</div></div><div id="swipeStatus" class="mini-panel">${moving}を${direction}へスーッ！</div><small>絵文字を押したまま、指を横に動かすのがスワイプ操作だよ</small>`;
+    const area=document.getElementById('swipeArea'), item=document.getElementById('swipeMove'), status=document.getElementById('swipeStatus');
+    let sx=0,sy=0,moved=false;
+    area.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;moved=false;area.setPointerCapture?.(e.pointerId)};
+    area.onpointermove=e=>{if(e.buttons===1){const dx=e.clientX-sx;const valid=goLeft?dx<0:dx>0;if(valid){const base=startX+dx;item.style.left=Math.max(18,Math.min(215,base))+'px';if(Math.abs(dx)>70&&Math.abs(e.clientY-sy)<110)moved=true;}}};
+    area.onpointerup=e=>{const dx=e.clientX-sx;const valid=goLeft?dx<-90:dx>90;if(moved||valid){item.style.left=endX+'px';status.textContent='🎉 うごかせた！';status.classList.add('done');setTimeout(advance,450)}else{item.style.left=startX+'px';toast(`💡 絵文字を押したまま、${direction}へスーッと動かそう`)}};
+  }else if(op==="flick"){
+    // 県名そのものではなく、その県に関係する言葉をフリック入力する。
+    const flickWords={
+      "宮城":"ぎゅうたん","山梨":"ぶどう","静岡":"ふじさん","京都":"まっちゃ","兵庫":"ひめじじょう",
+      "島根":"いずもたいしゃ","徳島":"あわおどり","福岡":"はかたらーめん","宮崎":"マンゴー",
+      "北海道":"かに","富山":"くろべだむ","福井":"きょうりゅう","愛知":"ひつまぶし","香川":"うどん","鹿児島":"さくらじま"
+    };
+    const answer=flickWords[p[0]] || (p[1].split("・")[0]||p[0]);
+    c.innerHTML=`<div class="big">${placeEmoji[p[0]]||"🗾"}</div><h3>${p[0]}のご当地フリック入力</h3><p><strong>${p[0]}</strong>に関係する「<strong>${answer}</strong>」をフリック入力しよう！</p><input id="word" inputmode="text" autocomplete="off" placeholder="${answer}"><br><button onclick="wordCheck('${answer}')">入力できた！</button><div class="flick-tip">💡 かなキーを上下左右へサッと動かして文字を選ぶ入力方法だよ</div>`;
+  }else if(op==="quiz"){
+    const quizSets={
+      "栃木":["日光東照宮にある有名な建物は？",["陽明門","東京タワー","金閣寺"],0],
+      "山口":["山口県の名物として知られる魚は？",["ふぐ","マグロ","カニ"],0],
+      "熊本":["熊本県の有名なお城は？",["熊本城","松本城","名古屋城"],0]
+    };
+    const qz=quizSets[p[0]] || ["この県に関係するものはどれ？",[p[1].split("・")[0],"東京タワー","富士山"],0];
+    c.innerHTML=`<div class="big">${placeEmoji[p[0]]||"🗾"}</div><h3>${p[0]} ご当地クイズ</h3><p>${qz[0]}</p><div class="choices">${qz[1].map((x,i)=>`<button class="choiceBtn" onclick="quiz(${i===qz[2]})">${x}</button>`).join("")}</div>`;
+  }else if(op==="repeat"){
+    let count=0;
+    c.innerHTML=`<div class="big">🎯</div><h3>${p[0]} 連続タップチャレンジ</h3><p>ボタンを<strong>3回</strong>タップしてみよう！</p><button id="repeatBtn" class="choiceBtn">タップ！ <span id="repeatCount">0/3</span></button>`;
+    const rb=document.getElementById('repeatBtn'); rb.addEventListener('click',()=>{count++;document.getElementById('repeatCount').textContent=count+'/3';if(count>=3){rb.disabled=true;setTimeout(advance,250)}});
+  }else if(op==="back"){
+    c.innerHTML=`<div class="big">${placeEmoji[p[0]]||"🗾"}</div><h3>${p[0]}の観光案内</h3><p>「${p[1].split("・")[0]}」の案内を開いて、<strong>戻る</strong>操作で旅の画面へ帰ろう。</p><div id="backPanel"><button onclick="document.getElementById('backPanel').innerHTML='<div class=\"mini-panel\">📖 観光案内を読んでいます…</div><button class=\"secondary\" onclick=\"advance()\">← 戻る</button>'">📖 観光案内を開く</button></div>`;
+  }else if(op==="copy"){
+    const memo=p[1].split('・')[0];
+    c.innerHTML=`<div class="big">${placeEmoji[p[0]]||"🗾"}</div><h3>${p[0]}の旅メモ</h3><p>「${memo}」を友だちに送るつもりで、<strong>コピーして貼り付け</strong>よう。</p><div class="copybox"><div class="copy-source" id="src">${memo}</div><button id="copyBtn" onclick="copyGame()">📋 コピー</button><div id="copyStatus" class="mini-panel">① まず「コピー」を押そう</div><input id="dst" placeholder="ここに貼り付け" autocomplete="off"><button id="pasteBtn" class="secondary" onclick="pasteGame()" disabled>📥 貼り付け</button></div><small>コピーした文字を、別の場所へ貼り付ける操作を練習しよう</small>`;
+  }else{
+    const q=[
+      ['指を画面につけたまま、横にスーッと動かす','スワイプ'],['文字を複製して別の場所へ貼る','コピー＆ペースト'],['前の画面へ戻る','戻る'],['キーから指を上下左右へ動かして文字を選ぶ','フリック入力']
+    ][idx % 4];
+    c.innerHTML=`<div class="big">${placeEmoji[p[0]]||"🗾"}</div><h3>${p[0]} スマホ博士チャレンジ</h3><p>「${q[0]}」この操作の名前はどれ？</p><div class="choices"><button onclick="quizTerm(${q[1]==='タップ'})">タップ</button><button onclick="quizTerm(${q[1]==='スワイプ'})">スワイプ</button><button onclick="quizTerm(${q[1]==='コピー＆ペースト'})">コピー＆ペースト</button><button onclick="quizTerm(${q[1]==='戻る'})">戻る</button><button onclick="quizTerm(${q[1]==='フリック入力'})">フリック入力</button></div>`;
+  }
+}
+function quizTerm(ok){if(ok)advance();else toast("💡 ヒントを読んで、もう一度考えてみよう！")}
+function stopStageTimer(){if(stageTimer){clearInterval(stageTimer);stageTimer=null;}}
+function startStageTimer(){
+ stopStageTimer(); stageTimerLocked=false; stageTime=20;
+ const el=document.getElementById("timer"); if(el)el.textContent=stageTime;
+ stageTimer=setInterval(()=>{
+   if(stageTimerLocked)return;
+   stageTime--; const e=document.getElementById("timer"); if(e)e.textContent=stageTime;
+   if(stageTime<=0){
+     stageTimerLocked=true; stopStageTimer(); combo=0;
+     toast("⏰ 時間切れ！もう一度チャレンジしよう");
+     const c=document.getElementById("challenge");
+     c.innerHTML=`<div class="clearbox"><div class="big">⏰</div><h3>時間切れ！</h3><p>20秒以内にクリアできるかな？</p><button onclick="retryStage()">🔄 もう一度挑戦</button></div>`;
+   }
+ },1000);
+}
+function retryStage(){window.stageClearing=false;render();toast("⏱️ 20秒スタート！がんばろう！")}
+function advance(){
+ if(window.stageClearing || stageTimerLocked)return;
+ window.stageClearing=true;
+ stopStageTimer();
+ playClearSparkle();
+ combo++;score+=10+(combo>=3?5:0);if(score%50===0)level++;
+ const current=places[idx], next=places[Math.min(idx+1,places.length-1)];
+ const c=document.getElementById("challenge");
+ if(idx<places.length-1){
+   c.innerHTML=`<div class="clearbox"><div style="font-size:42px;font-weight:900;letter-spacing:4px;color:#e96f93">CREAR</div><div class="big">🎉</div><h2>${current[0]} クリア！</h2><p>「${current[2]}」の操作ができたよ。</p><p>⭐ +${10+(combo>=3?5:0)}点　🔥 コンボ ${combo}</p><button onclick="goNextStage()">次のステージへ ➜</button><div class="stagehint">次は ${next[0]} だよ！</div></div>`;
+ }else{
+   c.innerHTML=`<div class="clearbox"><div style="font-size:42px;font-weight:900;letter-spacing:4px;color:#e96f93">CREAR</div><div class="big">🎊</div><h2>沖縄ステージクリア！</h2><p>日本一周まであと少し！</p><button onclick="finish()">🏁 ゴールへ進む</button></div>`;
+ }
+ document.getElementById("score").textContent=score;document.getElementById("level").textContent=level;document.getElementById("combo").textContent=combo;
+}
+function goNextStage(){
+ if(!window.stageClearing)return;
+ idx++;window.stageClearing=false;render();
+ toast("🗾 次のステージへ！");
+}
+function wordCheck(answer="きょうと"){if((document.getElementById("word").value||"").trim()===answer)advance();else toast("💡 「"+answer+"」と入力してみよう") }
+let gameCopied="";
+function copyGame(){
+ gameCopied=document.getElementById("src").textContent.trim();
+ try{navigator.clipboard?.writeText(gameCopied)}catch(e){}
+ const btn=document.getElementById("pasteBtn"), status=document.getElementById("copyStatus");
+ if(btn)btn.disabled=false;
+ if(status)status.textContent="✅ コピー済み！②「貼り付け」を押そう";
+ toast("📋 コピーしたよ！次は貼り付け")
+}
+function pasteGame(){
+ if(!gameCopied){toast("💡 先に「コピー」を押してね");return}
+ const dst=document.getElementById("dst");
+ if(dst){dst.value=gameCopied}
+ const status=document.getElementById("copyStatus");
+ if(status)status.textContent="🎉 貼り付けできた！";
+ setTimeout(advance,250)
+}
+function quiz(ok){if(ok){score+=25;toast("🎉 正解！ +25");advance()}else{energy=Math.max(0,energy-1);combo=0;toast("💡 もう一度考えてみよう")}}
+function rest(){energy=Math.min(3,energy+1);score+=5;combo=0;toast("♨️ げんき回復！");advance()}
+function power(){level++;score+=20;toast("⭐ わんこパワーアップ！");advance()}
+function finish(){stopStageTimer();window.stageClearing=false;score+=100;const companionEmoji=window.companion==='grandpa'?'👴':'👵';document.getElementById("challenge").innerHTML=`<div class="big" style="font-size:72px">${companionEmoji}　🐕</div><h2>🎊 日本一周ゴール！</h2><p>${window.player}さん、47都道府県を一周したよ！</p><p>🐕 と旅の仲間が一緒にゴールしました！</p><p>🏆 最終スコア：${score}</p><div class="clearbox"><div style="font-size:64px">${companionEmoji}　🐕</div><strong>日本一周、おつかれさま！</strong></div><button onclick="restartJourney()">もう一度旅する</button>`;document.getElementById("score").textContent=score}
+function restartJourney(){ stopStageTimer(); idx=0;score=0;energy=3;level=1;combo=0;opOrder=[];window.stageClearing=false;document.getElementById("game").classList.add("hidden");document.getElementById("start").classList.remove("hidden");document.getElementById("nameStep").classList.add("hidden");document.getElementById("companionStep").classList.add("hidden");window.scrollTo({top:0,behavior:"smooth"});}
+function showMenu(){document.getElementById("game").classList.add("hidden");document.getElementById("menu").classList.remove("hidden")}
+function backGame(){document.getElementById("menu").classList.add("hidden");document.getElementById("game").classList.remove("hidden")}
+function toast(m){let t=document.getElementById("toast");t.textContent=m;t.classList.remove("hidden");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.add("hidden"),1700)}
+</script>
+</body>
+</html>
