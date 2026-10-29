@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>まもるナビ｜地域防災アプリ</title>
+<style>
+:root{--green:#168a55;--yellow:#f2b400;--red:#d94141;--navy:#17324d;--bg:#f4f7f8;--card:#fff;--muted:#687785}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;background:var(--bg);color:#17212b}
+header{background:linear-gradient(135deg,#17324d,#24745a);color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:25px} header p{margin:6px 0 0;opacity:.9;font-size:13px}
+nav{display:flex;gap:8px;overflow:auto;margin-top:15px} nav button{border:0;border-radius:999px;padding:9px 14px;background:#ffffff22;color:#fff;white-space:nowrap;font-weight:700}
+nav button.active{background:#fff;color:var(--navy)}
+main{max-width:900px;margin:auto;padding:16px}.page{display:none}.page.active{display:block}
+.card{background:var(--card);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 3px 14px #17324d12}
+h2{font-size:21px;margin:0 0 12px} h3{margin:0 0 8px}.small{font-size:13px;color:var(--muted)}
+.status{border-radius:18px;padding:22px;color:#fff;text-align:center;margin-bottom:14px}.status.safe{background:var(--green)}.status.caution{background:var(--yellow);color:#332700}.status.danger{background:var(--red)}
+.status .level{font-size:30px;font-weight:900}.status .place{font-size:14px;margin-top:5px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.btn{border:0;border-radius:13px;padding:13px 15px;font-size:15px;font-weight:800;cursor:pointer;background:#e9eff2;color:var(--navy)}.btn.primary{background:var(--green);color:#fff}.btn.danger{background:var(--red);color:#fff}.btn.yellow{background:#f8d45b}.btn:active{transform:scale(.98)}
+.map{height:300px;border-radius:15px;background:#dcefe3;position:relative;overflow:hidden;border:1px solid #c5d8ce}
+.map:before{content:"";position:absolute;inset:0;background:linear-gradient(25deg,transparent 47%,#9ac9a7 48%,#9ac9a7 51%,transparent 52%),linear-gradient(150deg,transparent 44%,#fff 45%,#fff 48%,transparent 49%);opacity:.8}
+.zone{position:absolute;border-radius:50%;opacity:.35}.zone.red{width:150px;height:150px;background:#e74c3c;right:8%;top:12%}.zone.yellow{width:180px;height:110px;background:#f1c40f;left:8%;bottom:10%}
+.pin{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:34px}.route{position:absolute;left:20%;bottom:28%;width:58%;height:5px;background:#168a55;transform:rotate(-20deg);border-radius:8px}
+.notice{padding:13px;border-radius:12px;background:#fff3cd;margin-top:10px}.ok{background:#e6f7ed}.dangerbox{background:#fde7e7}
+.check{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #edf0f2}.check input{width:20px;height:20px}
+.question{font-size:18px;font-weight:800}.choice{width:100%;text-align:left;margin:7px 0;background:#f0f4f6}.result{font-weight:800;padding:10px;border-radius:10px}
+footer{text-align:center;color:#81909b;font-size:12px;padding:15px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}main{padding:10px}.status .level{font-size:26px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ まもるナビ</h1>
+  <p>高齢者・子どもにもわかりやすい地域防災WEBアプリ（試作品）</p>
+  <nav>
+    <button class="active" data-page="home">ホーム</button>
+    <button data-page="map">危険マップ</button>
+    <button data-page="evac">避難・安否</button>
+    <button data-page="quiz">防災クイズ</button>
+  </nav>
+</header>
+
+<main>
+<section id="home" class="page active">
+  <div id="status" class="status safe">
+    <div class="level">🟢 安全</div>
+    <div class="place" id="locationText">現在地を確認しています…</div>
+  </div>
+  <div class="card">
+    <h2>今すぐできること</h2>
+    <div class="grid">
+      <button class="btn primary" onclick="go('map')">📍 危険マップを見る</button>
+      <button class="btn primary" onclick="go('evac')">🚶 避難・安否を確認</button>
+      <button class="btn yellow" onclick="go('quiz')">🧠 防災クイズ</button>
+      <button class="btn" onclick="showAlert()">🔔 災害情報を確認</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>防災チェック</h2>
+    <label class="check"><input type="checkbox"> 家具を固定している</label>
+    <label class="check"><input type="checkbox"> 非常用バッグを準備している</label>
+    <label class="check"><input type="checkbox"> 水・食料を備蓄している</label>
+    <label class="check"><input type="checkbox"> 避難所までの道を確認している</label>
+    <p class="small">※チェック状態はこのブラウザに保存されます。</p>
+  </div>
+</section>
+
+<section id="map" class="page">
+  <div class="card">
+    <h2>📍 危険マップ</h2>
+    <p class="small">現在地の危険度を色で表示する試作品です。実際のハザードマップを接続すると、地域の浸水・土砂災害区域などを表示できます。</p>
+    <div class="map" aria-label="危険マップの試作表示">
+      <div class="zone red"></div><div class="zone yellow"></div><div class="route"></div><div class="pin">📍</div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <button class="btn primary" onclick="getLocation()">📡 現在地を取得</button>
+      <button class="btn danger" onclick="setDanger()">⚠️ 危険区域に入った想定</button>
+    </div>
+    <div id="mapNotice" class="notice ok">安全なルートを優先して案内します。</div>
+  </div>
+  <div class="card">
+    <h2>避難ルート</h2>
+    <p>❌ 浸水想定区域を通るルート</p>
+    <p>⭕ 危険区域を避けたルートを優先</p>
+    <button class="btn primary" onclick="alert('試作品：避難所までの安全ルートを表示します。実運用では自治体のハザードマップと道路情報を連携します。')">安全ルートを表示</button>
+  </div>
+</section>
+
+<section id="evac" class="page">
+  <div class="card">
+    <h2>🚶 避難・安否確認</h2>
+    <p>避難できたら大きなボタンを押してください。</p>
+    <button class="btn primary" style="width:100%;font-size:20px;padding:20px" onclick="evacuated()">✅ 避難しました</button>
+    <div id="evacResult"></div>
+  </div>
+  <div class="card">
+    <h2>👨‍👩‍👧 支援者への通知</h2>
+    <p class="small">本試作品では通知を画面上でシミュレーションします。</p>
+    <div id="supportStatus" class="notice">まだ避難ボタンは押されていません。</div>
+    <button class="btn" onclick="simulateNoResponse()">⏱️ 一定時間反応なしをシミュレート</button>
+  </div>
+  <div class="card">
+    <h2>大きな文字モード</h2>
+    <button class="btn primary" onclick="toggleLarge()">文字を大きくする / 戻す</button>
+  </div>
+</section>
+
+<section id="quiz" class="page">
+  <div class="card">
+    <h2>🧠 防災クイズ</h2>
+    <div id="quizArea"></div>
+  </div>
+</section>
+</main>
+<footer>SDGs 目標11「住み続けられるまちづくりを」／11.b 災害リスク管理の考え方をもとにした探究用プロトタイプ</footer>
+
+<script>
+const qs=[
+ {q:"台風が近づいているとき、基本的にどうしますか？",a:["外に出て様子を見る","安全な場所で情報を確認する","川の近くへ行く"],c:1},
+ {q:"土砂災害の危険がある場所では？",a:["危険区域に近づかない","写真を撮りに行く","急いで斜面へ行く"],c:0},
+ {q:"災害時、高齢者が避難できず取り残されることへの対策として考えられるのは？",a:["避難したことを支援者へ知らせる","何もしない","通知を止める"],c:0},
+ {q:"家具の転倒による負傷を減らすには？",a:["家具を固定する","家具を高く積む","通路に家具を置く"],c:0}
+];
+let qi=0, score=0;
+function renderQuiz(){
+ const x=qs[qi];
+ document.getElementById('quizArea').innerHTML=
+ `<p class="small">第 ${qi+1} 問 / ${qs.length}</p><div class="question">${x.q}</div>`+
+ x.a.map((v,i)=>`<button class="btn choice" onclick="answer(${i})">${v}</button>`).join('')+
+ `<div id="qResult"></div>`;
+}
+function answer(i){
+ const r=document.getElementById('qResult'), ok=i===qs[qi].c;
+ if(ok) score++;
+ r.className='result '+(ok?'ok':'dangerbox');
+ r.textContent=ok?'⭕ 正解！':'❌ もう一度、災害時の安全を考えてみよう。';
+ setTimeout(()=>{qi++; if(qi<qs.length) renderQuiz(); else document.getElementById('quizArea').innerHTML=`<h3>クイズ終了！</h3><p>あなたの得点：${score} / ${qs.length}</p><button class="btn primary" onclick="qi=0;score=0;renderQuiz()">もう一度挑戦</button>`},700);
+}
+function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id));window.scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.page));
+function showAlert(){alert('試作品の災害情報：大雨・台風などの警報が発表された想定です。実運用では自治体・気象情報APIと連携します。')}
+function setDanger(){const s=document.getElementById('status');s.className='status danger';s.innerHTML='<div class="level">🔴 危険</div><div class="place">危険区域に入った想定です。安全な場所へ避難してください。</div>';document.getElementById('mapNotice').className='notice dangerbox';document.getElementById('mapNotice').textContent='⚠️ この先は土砂災害警戒区域などの危険区域という想定です。避難所へ向かってください。'}
+function getLocation(){if(!navigator.geolocation){alert('このブラウザでは位置情報を利用できません。');return}navigator.geolocation.getCurrentPosition(p=>{document.getElementById('locationText').textContent=`現在地を取得しました（緯度 ${p.coords.latitude.toFixed(4)} / 経度 ${p.coords.longitude.toFixed(4)}）`;},()=>alert('位置情報を取得できませんでした。ブラウザの位置情報許可を確認してください。'))}
+function evacuated(){document.getElementById('evacResult').innerHTML='<div class="notice ok">✅ 避難済みとして記録しました。家族・近所の支援者へ知らせる想定です。</div>';document.getElementById('supportStatus').textContent='支援者への通知：避難済み（シミュレーション）'}
+function simulateNoResponse(){document.getElementById('supportStatus').className='notice dangerbox';document.getElementById('supportStatus').textContent='⚠️ 一定時間反応がありません。家族・近所の支援者へ確認を促す通知を送る想定です。'}
+function toggleLarge(){document.body.classList.toggle('large');document.body.style.fontSize=document.body.classList.contains('large')?'20px':''}
+renderQuiz();
+document.querySelectorAll('.check input').forEach((c,i)=>{c.checked=localStorage.getItem('check'+i)==='1';c.onchange=()=>localStorage.setItem('check'+i,c.checked?'1':'0')});
+</script>
+</body>
+</html>
